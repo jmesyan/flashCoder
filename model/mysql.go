@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	_ "github.com/go-sql-driver/mysql"
 )
+var err error
 
 type MysqlModel struct {
 	dbHandler *sql.DB
@@ -11,7 +12,6 @@ type MysqlModel struct {
 }
 
 func(m *MysqlModel)init(connstr string){
-	var err error
 	m.dbHandler,err=sql.Open("mysql",connstr)
 	if err != nil {
 		panic(err.Error())  // Just for example purpose. You should use proper error handling instead of panic
