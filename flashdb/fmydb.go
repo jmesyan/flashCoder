@@ -5,39 +5,78 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"strings"
 	"errors"
+	"encoding/json"
 )
 
 var err error
 
 type FMyDB struct {
-	dbHandler *sql.DB
 	connstr   string
+	dbHandler *sql.DB
 }
 
-func (m *FMyDB)Init(connstr string) {
+func (m *FMyDB) Init(connstr string) error {
 	m.dbHandler, err = sql.Open("mysql", connstr)
 	if err != nil {
-		panic(err.Error())
+		return err;
 	}
+	m.connstr=connstr
+	return nil;
+	return nil;
 }
 
-func (m *FMyDB)Close(){
+func (m *FMyDB) Close() {
 	m.dbHandler.Close()
 }
 
-func (m *FMyDB)Select(sql string, params ...interface{}) (*sql.Rows, error) {
+func (m *FMyDB) Select(sql string, params []interface{}) (string, error) {
 	if strings.Count(sql, "?") != len(params) {
-		return nil,errors.New("sql: params nums doesn't match need band")
+		return "", errors.New("sql: params nums doesn't match need band")
 	}
 	stmtOut, err := m.dbHandler.Prepare(sql)
 	if err != nil {
-		return nil,err
+		return "", err
 	}
 	defer stmtOut.Close()
-	return stmtOut.Query(params...)
+	rows, err := stmtOut.Query(params...)
+	columns, err := rows.Columns()
+	if err != nil {
+		return "",err
+	}
+	count := len(columns)
+	tableData := make([]map[string]interface{}, 0)
+	values := make([]interface{}, count)
+	valuePtrs := make([]interface{}, count)
+	for rows.Next() {
+		for i := 0; i < count; i++ {
+			valuePtrs[i] = &values[i]
+		}
+		rows.Scan(valuePtrs...)
+		entry := make(map[string]interface{})
+		for i, col := range columns {
+			var v interface{}
+			val := values[i]
+			b, ok := val.([]byte)
+			if ok {
+				v = string(b)
+			} else {
+				v = val
+			}
+			entry[col] = v
+		}
+		tableData = append(tableData, entry)
+	}
+	if err = rows.Err(); err != nil {
+		panic(err.Error())
+	}
+	jsonData, err := json.Marshal(tableData)
+	if err != nil {
+		return "", err
+	}
+	return string(jsonData), nil
 }
 
-func (m *FMyDB)SelectOne(sql string, params []interface{},res []interface{}) error {
+func (m *FMyDB) SelectOne(sql string, params []interface{}, res []interface{}) error {
 	if strings.Count(sql, "?") != len(params) {
 		return errors.New("sql: params nums doesn't match need band")
 	}
@@ -49,4 +88,69 @@ func (m *FMyDB)SelectOne(sql string, params []interface{},res []interface{}) err
 	return stmtOut.QueryRow(params...).Scan(res ...)
 }
 
+func (m *FMyDB)Insert(sql string,params []interface{}) (int64,error){
+	stmtIns, err := m.dbHandler.Prepare(sql)
+	if err != nil {
+		return 0,err
+	}
+	defer stmtIns.Close()
+	res, err:=stmtIns.Exec(params...)
+	if err != nil {
+		return 0,err
+	}
+	lastId, err := res.LastInsertId()
+	if err != nil {
+		return 0,err
+	}
+	return lastId,nil
+}
+
+
+func (m *FMyDB)Update(sql string,params []interface{}) error{
+	stmtIns, err := m.dbHandler.Prepare(sql)
+	if err != nil {
+		return err
+	}
+	defer stmtIns.Close()
+	_, err=stmtIns.Exec(params...)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (m *FMyDB)TransBegin()(*sql.Tx, error){
+	tx,err:=m.dbHandler.Begin()
+	return tx,err
+}
+
+func (m *FMyDB)TransInsert(tx *sql.Tx,sql string,params []interface{}) (int64,error){
+	stmtIns, err :=tx.Prepare(sql)
+	if err != nil {
+		return 0,err
+	}
+	defer stmtIns.Close()
+	res, err:=stmtIns.Exec(params...)
+	if err != nil {
+		return 0,err
+	}
+	lastId, err := res.LastInsertId()
+	if err != nil {
+		return 0,err
+	}
+	return lastId,nil
+}
+
+func (m *FMyDB) TransUpdate(tx *sql.Tx,sql string,params []interface{}) error{
+	stmtIns, err := tx.Prepare(sql)
+	if err != nil {
+		return err
+	}
+	defer stmtIns.Close()
+	_, err=stmtIns.Exec(params...)
+	if err != nil {
+		return err
+	}
+	return nil
+}
 
