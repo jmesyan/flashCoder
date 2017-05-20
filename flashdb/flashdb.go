@@ -31,11 +31,11 @@ type FlashDB interface {
 
 func SetDbHandler(dbType DriverType, connstr string) FlashDB {
 	switch dbType {
-	case DRMySQL:
-		db := new(FMyDB)
-		err := db.Init(connstr)
-		utils.CheckError(err)
-		return db
+		case DRMySQL:
+			db := new(FMyDB)
+			err := db.Init(connstr)
+			utils.CheckError(err)
+			return db
 	}
 	return nil
 }

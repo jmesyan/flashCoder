@@ -9,9 +9,9 @@ import (
 )
 
 func TestDb(t *testing.T){
-	db:=flashdb.SetDbHandler(flashdb.DRMySQL,"root:huidai021@/flashCoder")
+	db:=flashdb.SetDbHandler(flashdb.DRMySQL,"root:@/flashCoder")
 	//事务开始
-	tx,err:=db.TransBegin()
+	tx,err:=db.TransBegin()//使用事务确保mysql数据表类型为Innodb
 	utils.CheckError(err)
 
 	defer tx.Rollback()

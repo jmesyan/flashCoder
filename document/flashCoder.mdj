@@ -30,7 +30,7 @@
 			"_parent": {
 				"$ref": "AAAAAAFF+h6SjaM2Hec="
 			},
-			"name": "Data Model1",
+			"name": "flashModel",
 			"ownedElements": [
 				{
 					"_type": "ERDDiagram",
