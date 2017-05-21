@@ -8,6 +8,10 @@ import (
 )
 
 func main() {
+	//静态资源
+	ctr.StaticMap = make(map[string]string)
+	ctr.AddstaticMap("/assets", "./resources/assets")
+	//启动服务器
 	var Handler http.Handler
 	Handler = new(ctr.Controller)
 	s := &http.Server{

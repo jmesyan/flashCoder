@@ -7,11 +7,20 @@ import (
 	"strings"
 )
 
+var StaticMap map[string]string
+
 type Controller struct {
 }
 
 func (c *Controller) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	match := false
+	sli := strings.Split(r.URL.Path, "/")
+	prefix := "/" + sli[1]
+	if localdir, ok := StaticMap[prefix]; ok != false {
+		file := localdir + r.URL.Path[len(prefix):]
+		http.ServeFile(w, r, file)
+		return
+	}
+
 	mp, cp, fn := c.urlParse(r.URL.Path)
 	lfn := strings.ToLower(fn)
 	if lfn == "setview" || lfn == "setbase" || lfn == "view" {
@@ -33,14 +42,13 @@ func (c *Controller) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 							f := res.Method(i)
 							mmn := strings.ToLower(res.Type().Method(i).Name)
 							if mmn == lfn {
-								match = true
 								inb := make([]reflect.Value, 3)
 								inb[0], inb[1], inb[2] = reflect.ValueOf(mp), reflect.ValueOf(cp), reflect.ValueOf(fn)
 								res.MethodByName("SetBase").Call(inb)
 								inf := make([]reflect.Value, 2)
 								inf[0], inf[1] = reflect.ValueOf(r), reflect.ValueOf(w)
 								f.Call(inf)
-								break
+								return
 							}
 						}
 					}
@@ -50,10 +58,7 @@ func (c *Controller) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	}
 
-	if !match {
-		http.NotFound(w, r)
-	}
-
+	http.NotFound(w, r)
 	return
 }
 
@@ -75,4 +80,8 @@ func (c *Controller) urlParse(up string) (mp, cp, fn string) {
 
 	mp, cp, fn = "/", "/", "index"
 	return
+}
+
+func AddstaticMap(webdir, localdir string) {
+	StaticMap[webdir] = localdir
 }
