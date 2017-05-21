@@ -18,6 +18,7 @@ func (c *IndexController) Index(r Request, w Reponse) {
 		"hello": "world",
 		"good":  123,
 		"yes":   "yes is good",
+		"Title": "这是header测试",
 	}
 	c.View(w, data)
 }
