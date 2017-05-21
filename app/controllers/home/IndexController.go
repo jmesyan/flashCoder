@@ -2,7 +2,7 @@ package home
 
 import (
 	ke "flashCoder/app/kernel"
-	"fmt"
+	// "fmt"
 	"net/http"
 )
 
@@ -14,12 +14,10 @@ type IndexController struct {
 }
 
 func (c *IndexController) Index(r Request, w Reponse) {
-	fmt.Println(r.Method)
-	fmt.Println("this is home indexController welcome")
-	w.Header().Set("Server", "golang")
-	fmt.Fprintf(w, "jmesyan,%q", "location in index")
-}
-
-func (c *IndexController) Welcome(r Request, w Reponse) {
-	fmt.Fprintf(w, "jmesyan,%q", "location in welcome")
+	data := map[string]interface{}{
+		"hello": "world",
+		"good":  123,
+		"yes":   "yes is good",
+	}
+	c.View(w, data)
 }
