@@ -38,15 +38,16 @@ func (c *IndexController) Test(r Request, w Reponse) {
 
 	begin := time.Now()
 	var match bool
-	for i := 0; i < 100000; i++ {
+	for j := 0; j < 100000; j++ {
 		chance = rand.Intn(max)
 		match = false
-		for i := 0; i < 14; i++ {
-			if config[i][0] > chance {
+		for k := 0; k < 14; k++ {
+			if config[k][0] > chance {
 				match = true
-				fmt.Fprintln(w, true, config[i][0], chance)
+				fmt.Fprintln(w, true, config[k][0], chance)
+				break
 			} else {
-				chance -= config[i][0]
+				chance -= config[k][0]
 			}
 		}
 		if !match {
