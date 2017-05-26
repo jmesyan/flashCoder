@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"math/rand"
 	"net/http"
+	"sync"
 	"time"
 	// "reflect"
 )
@@ -14,6 +15,8 @@ type Request *http.Request
 
 type IndexController struct {
 	ke.BaseController
+	chances [][2]int
+	wg      sync.WaitGroup
 }
 
 func (c *IndexController) Index(r Request, w Reponse) {
@@ -28,6 +31,7 @@ func (c *IndexController) Index(r Request, w Reponse) {
 
 func (c *IndexController) Test(r Request, w Reponse) {
 	var max int
+	c.chances = make([][2]int, 0)
 	config := [...][2]int{{800, 1235}, {600, 1235}, {600, 1235}, {590, 1235}, {560, 1235}, {500, 1235}, {450, 1235}, {400, 1235}, {400, 1235}, {300, 1235}, {50, 1235}, {15, 1235}, {5, 1235}, {5, 1235}}
 
 	max = 0
@@ -38,28 +42,40 @@ func (c *IndexController) Test(r Request, w Reponse) {
 
 	begin := time.Now()
 	for j := 0; j < 10; j++ {
-		go c.create(w, config, max)
+		c.wg.Add(1)
+		go c.create(config, max)
 	}
-	diff := time.Since(begin)
+	c.wg.Wait()
+	for _, v := range c.chances {
+		if v[0] > 0 {
+			fmt.Fprintln(w, true, v)
+		} else {
+			fmt.Fprintln(w, false, v)
+		}
+	}
 
+	diff := time.Since(begin)
 	fmt.Fprintf(w, "diff is %s", diff)
 
 }
 
-func (c *IndexController) create(w Reponse, config [14][2]int, max int) {
+func (c *IndexController) create(config [14][2]int, max int) {
+	defer c.wg.Done()
 	for j := 0; j < 10000; j++ {
-		chance := rand.Intn(max)
+		chance := rand.Intn(max-1) + 1
 		match := false
 		for k := 0; k < 14; k++ {
-			if config[k][0] > chance {
+			if config[k][0] >= chance {
 				match = true
-				fmt.Println(w, true, config[k][0], chance)
+				c.chances = append(c.chances, config[k])
+				break
 			} else {
 				chance -= config[k][0]
 			}
 		}
 		if !match {
-			fmt.Println(w, false, chance)
+			tmp := [2]int{0, chance}
+			c.chances = append(c.chances, tmp)
 		}
 	}
 }
