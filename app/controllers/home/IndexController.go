@@ -27,7 +27,7 @@ func (c *IndexController) Index(r Request, w Reponse) {
 }
 
 func (c *IndexController) Test(r Request, w Reponse) {
-	var chance, max int
+	var max int
 	config := [...][2]int{{800, 1235}, {600, 1235}, {600, 1235}, {590, 1235}, {560, 1235}, {500, 1235}, {450, 1235}, {400, 1235}, {400, 1235}, {300, 1235}, {50, 1235}, {15, 1235}, {5, 1235}, {5, 1235}}
 
 	max = 0
@@ -37,26 +37,29 @@ func (c *IndexController) Test(r Request, w Reponse) {
 	fmt.Println("max is : ", max)
 
 	begin := time.Now()
-	var match bool
-	for j := 0; j < 100000; j++ {
-		chance = rand.Intn(max)
-		match = false
-		for k := 0; k < 14; k++ {
-			if config[k][0] > chance {
-				match = true
-				fmt.Fprintln(w, true, config[k][0], chance)
-				break
-			} else {
-				chance -= config[k][0]
-			}
-		}
-		if !match {
-			fmt.Fprintln(w, false, chance)
-		}
-
+	for j := 0; j < 10; j++ {
+		go c.create(w, config, max)
 	}
 	diff := time.Since(begin)
 
 	fmt.Fprintf(w, "diff is %s", diff)
 
+}
+
+func (c *IndexController) create(w Reponse, config [14][2]int, max int) {
+	for j := 0; j < 10000; j++ {
+		chance := rand.Intn(max)
+		match := false
+		for k := 0; k < 14; k++ {
+			if config[k][0] > chance {
+				match = true
+				fmt.Println(w, true, config[k][0], chance)
+			} else {
+				chance -= config[k][0]
+			}
+		}
+		if !match {
+			fmt.Println(w, false, chance)
+		}
+	}
 }
