@@ -1,15 +1,19 @@
 package controllers
 
 import (
+	"flashCoder/app/kernel/cache"
+	// "fmt"
 	"net/http"
 	"reflect"
 	"regexp"
 	"strings"
+	"time"
 )
 
 var StaticMap map[string]string
 
 type Controller struct {
+	CacheHandler *cache.Cache
 }
 
 func (c *Controller) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -26,6 +30,17 @@ func (c *Controller) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if lfn == "setview" || lfn == "setbase" || lfn == "view" {
 		http.Error(w, "can't find method", 500)
 		return
+	}
+
+	//检查请求次数,1秒内只能有一次请求，防止google多次请求
+	if c.CacheHandler == nil {
+		c.setCacheHandler(10*time.Minute, 30*time.Second)
+	}
+	cacheKey := c.getRequestCacheKey(mp, cp, fn)
+	if _, found := c.CacheHandler.Get(cacheKey); found {
+		return
+	} else {
+		c.CacheHandler.Set(cacheKey, 1, 1*time.Second)
 	}
 
 	if _, ok := Router[mp]; ok {
@@ -80,6 +95,14 @@ func (c *Controller) urlParse(up string) (mp, cp, fn string) {
 
 	mp, cp, fn = "/", "/", "index"
 	return
+}
+
+func (c *Controller) setCacheHandler(defaultExpiration, cleanupInterval time.Duration) {
+	c.CacheHandler = cache.New(defaultExpiration, cleanupInterval)
+}
+
+func (c *Controller) getRequestCacheKey(mp, cp, fn string) string {
+	return "Request:" + mp + "/" + cp + "/" + fn
 }
 
 func AddstaticMap(webdir, localdir string) {

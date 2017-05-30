@@ -67,18 +67,18 @@ func (c *BehaviorController) Add(r *http.Request, w http.ResponseWriter) {
 }
 
 func (c *BehaviorController) Btest(r *http.Request, w http.ResponseWriter) {
-	sql := "select * from flash_behavior where bid in(2, 3) order by bid asc"
+	sql := "select * from flash_behavior where bid in(2, 3, 4) order by bid asc"
 	condition := make([]interface{}, 0)
 	result, err := c.DB.Select(sql, condition)
 	utils.CheckError(err)
 	var res []flashdb.FlashBehavior
 	json.Unmarshal([]byte(result), &res)
 	var lastRes interface{}
+	fmt.Println(res)
 	for k, v := range res {
 		var params map[string]string
 		json.Unmarshal([]byte(v.Paramsin), &params)
 		if behavior, ok := behaviors.Behaviors[v.Name]; ok {
-			fmt.Println(6666, reflect.ValueOf(behavior).Type())
 			ber := reflect.ValueOf(behavior)
 			in := make([]reflect.Value, 2)
 			in[0] = reflect.ValueOf(params)

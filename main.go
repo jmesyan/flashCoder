@@ -2,7 +2,9 @@ package main
 
 import (
 	ctr "flashCoder/app/controllers"
-	"log"
+	"flashCoder/utils"
+	// "log"
+	// "fmt"
 	"net/http"
 	"time"
 )
@@ -19,10 +21,10 @@ func main() {
 	s := &http.Server{
 		Addr:           ":8080",
 		Handler:        Handler,
-		ReadTimeout:    10 * time.Second,
-		WriteTimeout:   10 * time.Second,
+		ReadTimeout:    100 * time.Second,
+		WriteTimeout:   100 * time.Second,
 		MaxHeaderBytes: 1 << 20,
 	}
-	log.Fatal(s.ListenAndServe())
-
+	err := s.ListenAndServe()
+	utils.CheckError(err)
 }

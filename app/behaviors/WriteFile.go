@@ -18,7 +18,7 @@ func (b *WriteFile) Execute(params map[string]string, lastRes interface{}) inter
 			in := make([]reflect.Value, 1)
 			in[0] = reflect.ValueOf(buf)
 			last.MethodByName("Write").Call(in)
-			last.MethodByName("Close").Call(nil)
+			return lastRes
 		}
 		return nil
 	} else {
