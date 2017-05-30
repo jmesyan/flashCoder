@@ -1,6 +1,8 @@
-package kernel
+package ctr
 
 import (
+	"flashCoder/app/kernel/db"
+	"flashCoder/utils"
 	"fmt"
 	"html/template"
 	"net/http"
@@ -18,11 +20,13 @@ type BaseController struct {
 	Cn          string
 	Fn          string
 	DefaultView string
+	DB          flashdb.FlashDB
 }
 
 func (c *BaseController) SetBase(mn, cn, fn string) {
 	c.Mn, c.Cn, c.Fn = strings.ToLower(mn), strings.ToLower(cn), strings.ToLower(fn)
 	c.DefaultView = c.SetView(c.Mn, c.Cn, c.Fn)
+	c.DB = flashdb.SetDbHandler(flashdb.DRMySQL, "root:@/flashCoder")
 }
 
 func (c *BaseController) SetView(mn, cn, fn string) string {
@@ -57,12 +61,15 @@ func (c *BaseController) View(w Reponse, data interface{}) {
 	headerView := c.SetView(c.Mn, "public", "header")
 	footerView := c.SetView(c.Mn, "public", "footer")
 	if c.DefaultView != "" {
-		t, err := template.ParseFiles(c.DefaultView, headerView, footerView)
+		tplName := c.Fn + TPLEXT
+		t := template.New(tplName).Funcs(funcMaps)
+		t, err := t.ParseFiles(c.DefaultView, headerView, footerView)
 		if err != nil {
 			fmt.Fprintf(w, "parse template error: %s", err.Error())
 			return
 		}
-		t.Execute(w, data)
+		err = t.Execute(w, data)
+		utils.CheckError(err)
 	} else {
 		fmt.Fprint(w, "template is empty")
 	}

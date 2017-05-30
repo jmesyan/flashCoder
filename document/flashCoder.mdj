@@ -273,7 +273,7 @@
 									"containerExtending": false,
 									"left": 448,
 									"top": 101,
-									"width": 155.708984375,
+									"width": 157.89892578125,
 									"height": 13,
 									"autoResize": false,
 									"underline": false,
@@ -312,7 +312,7 @@
 											"containerExtending": false,
 											"left": 453,
 											"top": 124,
-											"width": 145.708984375,
+											"width": 147.89892578125,
 											"height": 13,
 											"autoResize": false
 										},
@@ -336,7 +336,7 @@
 											"containerExtending": false,
 											"left": 453,
 											"top": 139,
-											"width": 145.708984375,
+											"width": 147.89892578125,
 											"height": 13,
 											"autoResize": false
 										},
@@ -360,7 +360,7 @@
 											"containerExtending": false,
 											"left": 453,
 											"top": 154,
-											"width": 145.708984375,
+											"width": 147.89892578125,
 											"height": 13,
 											"autoResize": false
 										}
@@ -376,7 +376,7 @@
 									"containerExtending": false,
 									"left": 448,
 									"top": 119,
-									"width": 155.708984375,
+									"width": 157.89892578125,
 									"height": 53,
 									"autoResize": false
 								}
@@ -392,7 +392,7 @@
 							"containerExtending": false,
 							"left": 448,
 							"top": 96,
-							"width": 155.708984375,
+							"width": 157.89892578125,
 							"height": 76,
 							"autoResize": false,
 							"nameLabel": {
@@ -838,7 +838,7 @@
 							"_parent": {
 								"$ref": "AAAAAAFbJKUlItrzFIs="
 							},
-							"name": "behavior",
+							"name": "paramsin",
 							"type": "text",
 							"length": "0",
 							"primaryKey": false,
