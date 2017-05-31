@@ -58,10 +58,7 @@ func (c *BehaviorController) Add(r *http.Request, w http.ResponseWriter) {
 			fmt.Fprintln(w, "行为名称不能为空")
 		}
 	} else {
-		data := map[string]interface{}{
-			"list": 12212,
-		}
-		c.View(w, data)
+		c.View(w, nil)
 	}
 
 }
@@ -77,8 +74,8 @@ func (c *BehaviorController) Btest(r *http.Request, w http.ResponseWriter) {
 	fmt.Println(res)
 	for k, v := range res {
 		var params map[string]string
-		json.Unmarshal([]byte(v.Paramsin), &params)
-		if behavior, ok := behaviors.Behaviors[v.Name]; ok {
+		json.Unmarshal([]byte(v.Paramsdef), &params)
+		if behavior, ok := behaviors.Behaviors[v.Bname]; ok {
 			ber := reflect.ValueOf(behavior)
 			in := make([]reflect.Value, 2)
 			in[0] = reflect.ValueOf(params)

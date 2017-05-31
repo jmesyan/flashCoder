@@ -1,0 +1,10 @@
+{{template "header"}}
+ <div id="navi"></div>
+ <script type="text/babel" src="/components/TitleWithFunc.js"></script>
+<script type="text/babel">
+	ReactDOM.render(
+	  <TitleWithFunc title="添加操作" handleName="返回列表" handleUrl="#" handleFunc={back.bind(this,-1)}/>,
+	  document.getElementById('navi')
+	);
+</script>
+{{template "footer"}}
