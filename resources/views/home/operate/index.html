@@ -4,17 +4,18 @@
 <script type="text/babel" src="/components/TableWithHandle.js"></script>
 <script type="text/babel">
     //操作
-    function deleteOperate(url) {
+    function deleteOperate(opid) {
+		var url = "/operate/delete?opid="+opid;
 		console.log(url)
     }
     //表格
 	var titles = ["编号", "操作名称", "操作标识", "添加时间", "操作", "备注"];
     var list = {{.list}};
     var handle = function(row, k){
-    	var bid = row.Bid, url = "/operate/delete?bid="+bid;
-    	console.log(bid)
+    	var opid = row.Opid;
 		return (
-			<td key={k}><a href="javascript:;" data={bid} onClick={(data)=>deleteOperate(this.props.data)}>删除</a></td>
+				<td key={k}><a href="javascript:;"  onClick={()=>deleteOperate(opid)}>删除</a></td>
+			
 		);
     }
     var disrow = [
