@@ -27,7 +27,7 @@ func (c *Controller) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	mp, cp, fn := c.urlParse(r.URL.Path)
 	lfn := strings.ToLower(fn)
-	if lfn == "setview" || lfn == "setbase" || lfn == "view" {
+	if lfn == "setview" || lfn == "setbase" || lfn == "view" || lfn == "success" || lfn == "error" {
 		http.Error(w, "can't find method", 500)
 		return
 	}

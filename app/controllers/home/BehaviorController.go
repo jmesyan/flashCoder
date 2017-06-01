@@ -33,7 +33,6 @@ func (c *BehaviorController) Index(r *http.Request, w http.ResponseWriter) {
 func (c *BehaviorController) Add(r *http.Request, w http.ResponseWriter) {
 	if r.Method == "POST" {
 		r.ParseForm()
-		fmt.Fprintln(w, r.Form["name"][0])
 		data := make([]interface{}, 4)
 		if len(r.Form["name"]) > 0 {
 			data[0] = r.Form["name"][0]

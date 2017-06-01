@@ -17,34 +17,36 @@
       <input type="button" class="btn btn-primary" value="提交操作"  data-toggle="modal" data-target="#Confirm" />
     </div>
  </form>
- <div id="confirmDialog"></div>
+ <div id="ModelDialog"></div>
 <script type="text/babel" src="/components/TitleWithFunc.js"></script>
-<script type="text/babel" src="/components/ConfirmDialog.js"></script>
+<script type="text/babel" src="/components/ModelDialog.js"></script>
 <script type="text/babel">
-    var left =function(){alert("left")};
-    var right =function(){alert("right")};
- 	const confirmConfig = {
+	let confirmParams = {
      	  id:"Confirm",  
 	      title: '提醒',  
-	      desc: '确认提交',  
+	      desc: '确认提交?',  
 	      leftBtn: {  
-	        text: '取消'  
+	        text: '取消',
+	        type: 'close'  
 	      },  
 	      rightBtn: {  
-	        text: '确认'  
+	        text: '确认',
+	        type:'func',
+	        func:function(){
+	            $("#Confirm").modal("hide");
+	        	$("#operateForm").submit();
+	        }  
 	      }  
-	    };
-   
-	function confirm(){
-		
-	}
+    };
+    ReactDOM.render(
+	 <ModelDialog {...confirmParams}/>,
+	  document.getElementById('ModelDialog')
+	);
+
 	ReactDOM.render(
 	  <TitleWithFunc title="添加操作" handleName="返回列表" handleUrl="#" handleFunc={back.bind(this,-1)}/>,
 	  document.getElementById('navi')
 	);
-	 ReactDOM.render(
-	 <ConfirmDialog {...confirmConfig} onLeftClick={left} onRightClick={right} />,
-	  document.getElementById('confirmDialog')
-	);
+	
 </script>
 {{template "footer"}}
