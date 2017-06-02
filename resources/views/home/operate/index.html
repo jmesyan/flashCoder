@@ -14,7 +14,7 @@
     var handle = function(row, k){
     	var opid = row.Opid;
 		return (
-				<td key={k}><a href="javascript:;"  onClick={()=>deleteOperate(opid)}>删除</a></td>
+				<td key={k}><a href="javascript:;"  onClick={deleteOperate.bind(this, opid)}>删除</a></td>
 			
 		);
     }
