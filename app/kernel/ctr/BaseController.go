@@ -1,11 +1,11 @@
 package ctr
 
 import (
-	"flashCoder/app/kernel/db"
 	"flashCoder/utils"
 	"fmt"
 	"html/template"
 	"net/http"
+	"strconv"
 	"strings"
 )
 
@@ -18,13 +18,11 @@ type BaseController struct {
 	Cn          string
 	Fn          string
 	DefaultView string
-	DB          flashdb.FlashDB
 }
 
 func (c *BaseController) SetBase(mn, cn, fn string) {
 	c.Mn, c.Cn, c.Fn = strings.ToLower(mn), strings.ToLower(cn), strings.ToLower(fn)
 	c.DefaultView = c.SetView(c.Mn, c.Cn, c.Fn)
-	c.DB = flashdb.SetDbHandler(flashdb.DRMySQL, "root:@/flashCoder")
 }
 
 func (c *BaseController) SetView(mn, cn, fn string) string {
@@ -67,7 +65,9 @@ func (c *BaseController) View(w http.ResponseWriter, data interface{}) {
 			return
 		}
 		err = t.Execute(w, data)
-		utils.CheckError(err)
+		if err != nil {
+			fmt.Fprint(w, err.Error())
+		}
 	} else {
 		fmt.Fprint(w, "template is empty")
 	}
@@ -111,4 +111,16 @@ func (c *BaseController) dispatchJump(w http.ResponseWriter, message string, sta
 	err = t.Execute(w, data)
 	utils.CheckError(err)
 	return
+}
+
+func (c *BaseController) ParsePage(r *http.Request) int {
+	r.ParseForm()
+	p := r.Form.Get("page")
+	page, err := strconv.Atoi(p)
+	if err != nil {
+		return 1
+	} else {
+		return page
+	}
+
 }

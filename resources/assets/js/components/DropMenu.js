@@ -1,7 +1,8 @@
 var DropMenu = React.createClass({
 	getInitialState: function() {
 		return {
-			options:[]
+			options:[],
+			value:""
 		};
 	},
 
@@ -12,13 +13,18 @@ var DropMenu = React.createClass({
 	            return response.json();
 	        }).then((responseJson) => {
 	                this.setState({options:responseJson});
+	                if(this.props.value != 'undefined'){
+						this.setState({value:this.props.value})
+					}
 	        }).catch((error) => console.error(error));
 		}
+
+
 	},
 
 	render: function() {
 		return (
-			 <select name="operate" className="form-control dropdown-toggle" onChange={this.props.changeFunc} >
+			 <select name="operate" className="form-control dropdown-toggle" value={this.state.value} onChange={this.props.changeFunc.bind(this, this)} >
 		       {
 		       	this.state.options.map(function(option,k){
 		       		return (<option key={k} value={option.value}>{option.name}</option>);

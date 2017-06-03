@@ -4,13 +4,13 @@ import (
 	"encoding/json"
 	"flashCoder/app/behaviors"
 	"flashCoder/app/kernel/ctr"
-	"flashCoder/app/kernel/db"
+	"flashCoder/app/kernel/html"
+	"flashCoder/app/models"
 	"flashCoder/utils"
 	"fmt"
 	"net/http"
-	// "os"
 	"reflect"
-	"time"
+	"strconv"
 )
 
 type BehaviorController struct {
@@ -18,14 +18,14 @@ type BehaviorController struct {
 }
 
 func (c *BehaviorController) Index(r *http.Request, w http.ResponseWriter) {
-	sql := "select * from flash_behavior order by updtime desc"
-	condition := make([]interface{}, 0)
-	result, err := c.DB.Select(sql, condition)
-	utils.CheckError(err)
-	var res []flashdb.FlashBehavior
-	json.Unmarshal([]byte(result), &res)
+	page := c.ParsePage(r)
+	pageSize := 10
+	list := models.Behavior.GetBehaviorList(page, pageSize)
+	total := models.Behavior.GetBehaviorListCount()
+	pages := html.NewPage(page, pageSize, total, "/behavior/index")
 	data := map[string]interface{}{
-		"list": res,
+		"list": list,
+		"page": pages.Show(),
 	}
 	c.View(w, data)
 }
@@ -33,28 +33,20 @@ func (c *BehaviorController) Index(r *http.Request, w http.ResponseWriter) {
 func (c *BehaviorController) Add(r *http.Request, w http.ResponseWriter) {
 	if r.Method == "POST" {
 		r.ParseForm()
-		data := make([]interface{}, 4)
-		if len(r.Form["name"]) > 0 {
-			data[0] = r.Form["name"][0]
-			if len(r.Form["paramName[]"]) > 0 && len(r.Form["paramValue[]"]) == len(r.Form["paramName[]"]) {
-				paramsin := make(map[string]string)
-				for k, v := range r.Form["paramName[]"] {
-					paramsin[v] = r.Form["paramValue[]"][k]
-				}
-				jsonData, err := json.Marshal(paramsin)
-				utils.CheckError(err)
-				data[1] = jsonData
-			} else {
-				data[1] = nil
-			}
-			data[2] = time.Now().Unix()
-			data[3] = data[2]
-			sql := "insert into flash_behavior(name, paramsin, addtime, updtime) values(?, ?, ?, ?)"
-			lastid, err := c.DB.Insert(sql, data)
+		if len(r.Form["bname"]) > 0 && len(r.Form["operate"]) > 0 && len(r.Form["paramsList"]) > 0 {
+			opid, err := strconv.Atoi(r.Form["operate"][0])
 			utils.CheckError(err)
-			fmt.Fprintln(w, "保存数据成功", lastid)
+			remark := "-"
+			if len(r.Form["remark"]) > 0 {
+				remark = r.Form["remark"][0]
+			}
+			//检查行为是否存在
+
+			//添加数据
+			models.Behavior.AddBehavior(r.Form["bname"][0], opid, []byte(r.Form["paramsList"][0]), remark)
+			c.Success(w, "行为添加成功", "/behavior/index")
 		} else {
-			fmt.Fprintln(w, "行为名称不能为空")
+			c.Error(w, "数据不能为空", "")
 		}
 	} else {
 		c.View(w, nil)
@@ -62,13 +54,40 @@ func (c *BehaviorController) Add(r *http.Request, w http.ResponseWriter) {
 
 }
 
+func (c *BehaviorController) Update(r *http.Request, w http.ResponseWriter) {
+	if r.Method == "POST" {
+		r.ParseForm()
+		if len(r.Form["bid"]) > 0 && len(r.Form["bname"]) > 0 && len(r.Form["operate"]) > 0 && len(r.Form["paramsList"]) > 0 {
+			bid, err := strconv.Atoi(r.Form["bid"][0])
+			if err != nil || bid < 1 {
+				c.Error(w, "行为不存在", "")
+				return
+			}
+			opid, err := strconv.Atoi(r.Form["operate"][0])
+			utils.CheckError(err)
+			remark := "-"
+			if len(r.Form["remark"]) > 0 {
+				remark = r.Form["remark"][0]
+			}
+			models.Behavior.UpdateBehavior(bid, r.Form["bname"][0], opid, []byte(r.Form["paramsList"][0]), remark)
+			c.Success(w, "行为更新成功", "/behavior/index")
+		} else {
+			c.Error(w, "数据不能为空", "")
+		}
+	} else {
+		r.ParseForm()
+		bid, err := strconv.Atoi(r.Form["bid"][0])
+		if err != nil || bid < 1 {
+			c.Error(w, "行为不存在", "")
+			return
+		}
+		behavior := models.Behavior.GetBehavior(bid)
+		c.View(w, behavior)
+	}
+}
+
 func (c *BehaviorController) Btest(r *http.Request, w http.ResponseWriter) {
-	sql := "select * from flash_behavior where bid in(2, 3, 4) order by bid asc"
-	condition := make([]interface{}, 0)
-	result, err := c.DB.Select(sql, condition)
-	utils.CheckError(err)
-	var res []flashdb.FlashBehavior
-	json.Unmarshal([]byte(result), &res)
+	res := models.Behavior.BehaviorTest()
 	var lastRes interface{}
 	fmt.Println(res)
 	for k, v := range res {

@@ -1,4 +1,4 @@
-package flashdb
+package models
 
 type FlashBehavior struct {
 	Bid       int64
