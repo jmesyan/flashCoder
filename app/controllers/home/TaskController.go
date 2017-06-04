@@ -5,11 +5,12 @@ import (
 	"flashCoder/app/kernel/ctr"
 	"flashCoder/app/kernel/html"
 	"flashCoder/app/models"
-
+	"flashCoder/app/operates"
 	// "flashCoder/utils"
 	// "fmt"
 	"net/http"
-	// "strconv"
+	"reflect"
+	"strconv"
 )
 
 type TaskController struct {
@@ -70,4 +71,55 @@ func (c *TaskController) Add(r *http.Request, w http.ResponseWriter) {
 		c.View(w, data)
 	}
 
+}
+
+func (c *TaskController) TaskExecute(r *http.Request, w http.ResponseWriter) {
+	if r.Method == "GET" {
+		r.ParseForm()
+		var tid int64
+		tidstr := r.Form["tid"][0]
+		if len(tidstr) <= 0 {
+			c.Error(w, "任务信息不全", "")
+		} else {
+			td, err := strconv.Atoi(tidstr)
+			if err != nil {
+				c.Error(w, "任务id因为整数", "")
+				return
+			}
+			tid = int64(td)
+			task := models.Task.GetTask(tid)
+			if task.Tid > 0 {
+				taskBehavior := models.Task.GetTaskBehavior(task.Tid, task.Tcate)
+				var lastRes interface{}
+				for k, v := range taskBehavior {
+					bv := models.Behavior.GetBehavior(v.Bid)
+					optag := models.Operate.GetOperateTagById(bv.Opid)
+					var params []models.OperateParams
+					json.Unmarshal([]byte(v.Paramsin), &params)
+					var paramsList map[string]string
+					paramsList = make(map[string]string)
+					for _, param := range params {
+						paramsList[param.Name] = param.Value
+					}
+
+					if operate, ok := operates.Operates[optag]; ok {
+						ber := reflect.ValueOf(operate)
+						in := make([]reflect.Value, 2)
+						in[0] = reflect.ValueOf(paramsList)
+						if k == 0 {
+							in[1] = reflect.ValueOf(0)
+						} else {
+							in[1] = reflect.ValueOf(lastRes)
+						}
+						last := ber.MethodByName("Execute").Call(in)
+						lastRes = last[0].Interface()
+					}
+
+				}
+				c.Success(w, "任务执行完成", "")
+			} else {
+				c.Error(w, "任务不存在", "")
+			}
+		}
+	}
 }

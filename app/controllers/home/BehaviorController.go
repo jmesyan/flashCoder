@@ -1,15 +1,11 @@
 package home
 
 import (
-	"encoding/json"
-	"flashCoder/app/behaviors"
 	"flashCoder/app/kernel/ctr"
 	"flashCoder/app/kernel/html"
 	"flashCoder/app/models"
 	"flashCoder/utils"
-	"fmt"
 	"net/http"
-	"reflect"
 	"strconv"
 )
 
@@ -85,28 +81,5 @@ func (c *BehaviorController) Update(r *http.Request, w http.ResponseWriter) {
 		bid = int64(id)
 		behavior := models.Behavior.GetBehavior(bid)
 		c.View(w, behavior)
-	}
-}
-
-func (c *BehaviorController) Btest(r *http.Request, w http.ResponseWriter) {
-	res := models.Behavior.BehaviorTest()
-	var lastRes interface{}
-	fmt.Println(res)
-	for k, v := range res {
-		var params map[string]string
-		json.Unmarshal([]byte(v.Paramsdef), &params)
-		if behavior, ok := behaviors.Behaviors[v.Bname]; ok {
-			ber := reflect.ValueOf(behavior)
-			in := make([]reflect.Value, 2)
-			in[0] = reflect.ValueOf(params)
-			if k == 0 {
-				in[1] = reflect.ValueOf(0)
-			} else {
-				in[1] = reflect.ValueOf(lastRes)
-			}
-			last := ber.MethodByName("Execute").Call(in)
-			lastRes = last[0].Interface()
-		}
-
 	}
 }

@@ -7,9 +7,9 @@
 	var titles = ["编号", "任务名称", "任务类型", "更新时间", "操作"];
     var list = {{.list}};
     var handle = function(row, k){
-    	var tid = row.Tid, url = "/task/update?tid="+tid;
+    	var tid = row.Tid, url = "/task/taskExecute?tid="+tid;
 		return (
-			<td key={k}><a href={url} >修改</a></td>
+			<td key={k}><a href={url} >执行</a></td>
 		);
     }
     var disrow = [

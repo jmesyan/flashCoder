@@ -6,6 +6,12 @@ import (
 	"time"
 )
 
+type OperateParams struct {
+	Type  int
+	Name  string
+	Value string
+}
+
 type OperateModel struct {
 }
 
@@ -78,4 +84,17 @@ func (m *OperateModel) AddOperate(opname, optag, remark string) int64 {
 	lastid, err := DB.Insert(sql, data)
 	utils.CheckError(err)
 	return lastid
+}
+
+func (m *OperateModel) GetOperateTagById(opid int64) string {
+	sql := "select optag from flash_operate where opid = ?"
+	condition := []interface{}{opid}
+	var optag string
+	res := []interface{}{&optag}
+	err := DB.SelectOne(sql, condition, res)
+	if err != nil {
+		return ""
+	} else {
+		return optag
+	}
 }

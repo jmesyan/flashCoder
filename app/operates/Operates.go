@@ -1,6 +1,6 @@
-package behaviors
+package operates
 
-var Behaviors = map[string]interface{}{
+var Operates = map[string]interface{}{
 	"OpenFile":  new(OpenFile),
 	"WriteFile": new(WriteFile),
 	"CloseFile": new(CloseFile),
