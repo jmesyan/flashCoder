@@ -1,0 +1,30 @@
+{{template "header" .}}
+<div id="main"></div>
+{{str2html .page}}
+<script type="text/babel" src="/components/TitleWithFunc.js"></script>
+<script type="text/babel" src="/components/TableWithHandle.js"></script>
+<script type="text/babel">
+	var titles = ["编号", "任务名称", "任务类型", "更新时间", "操作"];
+    var list = {{.list}};
+    var handle = function(row, k){
+    	var tid = row.Tid, url = "/task/update?tid="+tid;
+		return (
+			<td key={k}><a href={url} >修改</a></td>
+		);
+    }
+    var disrow = [
+		{name:"Tid"},
+		{name:"Tname"},
+		{name:"Tcate"},
+		{name:"Updtime",filters:[timeFormat]},
+		{name:false, handle:handle},
+    ];
+	ReactDOM.render(
+	  <div>
+	  <TitleWithFunc title="任务列表" handleName="添加任务" handleUrl="/task/add" handleFunc={function(){return false}}/>
+	  <TableWithHandle titles={titles} list={list}  disrow={disrow}/>
+	  </div>,
+	  document.getElementById('main')
+	);
+</script>
+{{template "footer" .}}

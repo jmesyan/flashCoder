@@ -1,0 +1,51 @@
+{{template "header" .}}
+<div id="navi"></div>
+<div class="panel-group clear" id="accordion" role="tablist" aria-multiselectable="true">
+  <div class="panel panel-primary">
+    <div class="panel-heading" role="tab" id="headingOne">
+      <h4 class="panel-title">
+        <a role="button" data-toggle="collapse" data-parent="#accordion" href="#BasicTask" aria-expanded="true" aria-controls="BasicTask">
+          基础任务
+        </a>
+      </h4>
+    </div>
+    <div id="BasicTask" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+      
+    </div>
+  </div>
+  <div class="panel panel-success">
+    <div class="panel-heading" role="tab" id="headingTwo">
+      <h4 class="panel-title">
+        <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#CompositeTask" aria-expanded="false" aria-controls="CompositeTask">
+         复合任务
+        </a>
+      </h4>
+    </div>
+    <div id="CompositeTask" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+      <div class="panel-body">
+        Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
+      </div>
+      <div class="panel-footer">
+       <input type="hidden" name="CompositeTaskBasics" value=""/>
+       Panel footer
+      </div>  
+    </div>
+  </div>
+</div>
+<script type="text/babel" src="/components/TitleWithFunc.js"></script>
+<script type="text/babel" src="/components/TaskChoosePanel.js"></script>
+<script type="text/babel" src="/components/TaskChoosePanel.js"></script>
+<script type="text/babel" src="/components/ModelDialog.js"></script>
+<script type="text/babel">
+    var behaviorList = {{.behaviorList}}
+	ReactDOM.render(
+	  <TitleWithFunc title="添加任务" handleName="返回列表" handleUrl="#" handleFunc={back.bind(this,-1)}/>,
+	  document.getElementById('navi')
+	);
+
+	ReactDOM.render(
+	  <TaskChoosePanel itemList={behaviorList}/>,
+	  document.getElementById('BasicTask')
+	);
+</script>
+{{template "footer" .}}

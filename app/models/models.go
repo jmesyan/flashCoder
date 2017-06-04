@@ -8,11 +8,13 @@ import (
 var DB flashdb.FlashDB
 var Operate *OperateModel
 var Behavior *BehaviorModel
+var Task *TaskModel
 
 func init() {
 	DB = flashdb.SetDbHandler(flashdb.DRMySQL, "root:@/flashCoder")
 	Operate = new(OperateModel)
 	Behavior = new(BehaviorModel)
+	Task = new(TaskModel)
 }
 
 func getPageSql(page, pageSize int) string {

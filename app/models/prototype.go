@@ -20,6 +20,7 @@ type FlashOperate struct {
 
 type FlashTask struct {
 	Tid     int64
+	Tname   string
 	Tcate   uint8
 	Tsubs   string
 	bids    string
