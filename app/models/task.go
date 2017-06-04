@@ -3,8 +3,13 @@ package models
 import (
 	"encoding/json"
 	"flashCoder/utils"
-	// "time"
+	"time"
 )
+
+type TaskItem struct {
+	ItemId   int64
+	ItemName string
+}
 
 type TaskModel struct {
 }
@@ -50,4 +55,45 @@ func (m *TaskModel) GetTaskListCount(tcate int) int {
 	} else {
 		return count
 	}
+}
+
+func (m *TaskModel) AddBasicTask(name string, berhaviors []TaskItem) bool {
+	tx, err := DB.TransBegin() //使用事务确保mysql数据表类型为Innodb
+	if err != nil {
+		return false
+	}
+	//添加一个任务
+	sql := "insert into flash_task(tname, tcate, bids, addtime, updtime) values(?, ?, ?, ?, ?)"
+	contents := make([]interface{}, 5)
+	contents[0] = name
+	contents[1] = 1
+	json, err := json.Marshal(berhaviors)
+	if err != nil {
+		return false
+	}
+	contents[2] = string(json)
+	contents[3] = time.Now().Unix()
+	contents[4] = contents[3]
+	tid, err := DB.TransInsert(tx, sql, contents)
+	if err != nil {
+		tx.Rollback()
+		return false
+	}
+
+	//添加任务行为序列
+	for k, v := range berhaviors {
+		bid := v.ItemId
+		border := k
+		behavior := Behavior.GetBehavior(bid)
+		paramsin := behavior.Paramsdef
+		sql = "insert into flash_task_behavior(bid, tid, border, paramsin) values(?, ?, ?, ?)"
+		contents = []interface{}{bid, tid, border, paramsin}
+		_, err := DB.TransInsert(tx, sql, contents)
+		if err != nil {
+			tx.Rollback()
+			return false
+		}
+	}
+	tx.Commit()
+	return true
 }

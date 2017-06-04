@@ -76,11 +76,13 @@ func (c *BehaviorController) Update(r *http.Request, w http.ResponseWriter) {
 		}
 	} else {
 		r.ParseForm()
-		bid, err := strconv.Atoi(r.Form["bid"][0])
-		if err != nil || bid < 1 {
+		var bid int64
+		id, err := strconv.Atoi(r.Form["bid"][0])
+		if err != nil || id < 1 {
 			c.Error(w, "行为不存在", "")
 			return
 		}
+		bid = int64(id)
 		behavior := models.Behavior.GetBehavior(bid)
 		c.View(w, behavior)
 	}

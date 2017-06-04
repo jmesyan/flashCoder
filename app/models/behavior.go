@@ -60,7 +60,7 @@ func (m *BehaviorModel) UpdateBehavior(bid int, bname string, opid int, paramsde
 
 }
 
-func (m *BehaviorModel) GetBehavior(bid int) FlashBehavior {
+func (m *BehaviorModel) GetBehavior(bid int64) FlashBehavior {
 	sql := "select * from flash_behavior where bid = ?"
 	condition := []interface{}{bid}
 	result, err := DB.Select(sql, condition)

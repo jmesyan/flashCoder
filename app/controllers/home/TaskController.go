@@ -1,9 +1,11 @@
 package home
 
 import (
+	"encoding/json"
 	"flashCoder/app/kernel/ctr"
 	"flashCoder/app/kernel/html"
 	"flashCoder/app/models"
+
 	// "flashCoder/utils"
 	// "fmt"
 	"net/http"
@@ -30,7 +32,28 @@ func (c *TaskController) Index(r *http.Request, w http.ResponseWriter) {
 func (c *TaskController) Add(r *http.Request, w http.ResponseWriter) {
 	if r.Method == "POST" {
 		r.ParseForm()
-
+		taskName := r.Form["taskName"][0]
+		taskType := r.Form["taskType"][0]
+		var itemList []models.TaskItem
+		if taskType == "basicTask" {
+			taskList := r.Form["basicTaskBehaviors"][0]
+			json.Unmarshal([]byte(taskList), &itemList)
+		} else {
+			taskList := r.Form["compositeTaskBasics"][0]
+			json.Unmarshal([]byte(taskList), &itemList)
+		}
+		if len(itemList) <= 0 || len(taskName) <= 0 {
+			c.Error(w, "请选择数据", "")
+		} else {
+			if taskType == "basicTask" {
+				res := models.Task.AddBasicTask(taskName, itemList)
+				if res {
+					c.Success(w, "添加任务成功", "/task/index")
+				} else {
+					c.Error(w, "添加任务失败,请重试", "")
+				}
+			}
+		}
 	} else {
 		page := c.ParsePage(r)
 		pageSize := 10

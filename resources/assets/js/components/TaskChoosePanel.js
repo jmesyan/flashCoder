@@ -30,8 +30,9 @@ var TaskChoosePanel = React.createClass({
 	componentWillMount: function() {
 		if (this.props.itemList.length > 0) {
 			var itemChecks = [];
+			var idName = this.props.itemIdName;
 			for (var i in this.props.itemList){
-				var id = this.props.itemList[i].Bid;
+				var id = this.props.itemList[i][idName];
 				itemChecks[id]={isChecked:false};
 			}
 			this.setState({itemChecks:itemChecks});
@@ -46,7 +47,7 @@ var TaskChoosePanel = React.createClass({
 				</div>
 		      </div>
 		       <div className="panel-footer">
-		       	   <input type="hidden" name="basicTaskBehaviors" value={this._jsonToString(this.state.chooseList)}/>
+		       	   <input type="hidden" name={this.props.saveName} value={this._jsonToString(this.state.chooseList)}/>
 			       <div>{this._renderComposite()}</div>
 		       </div>
 		       <ModelDialog ref="confirm"  {...this.state.confirmParams}/>  
@@ -62,9 +63,11 @@ var TaskChoosePanel = React.createClass({
 		var items =[];
 		var itemChange = this._itemsChange;
 		var itemChecks = this.state.itemChecks;
+		var idName = this.props.itemIdName;
+		var disName = this.props.itemDisName;
 		this.props.itemList.map(function(row, key){
 			items.push(
-			   <div key={key} className="col-xs-6 col-md-4">{row.Bname}<input type="checkbox" value={row.Bid} checked={itemChecks[row.Bid].isChecked} name="behaviors" onChange={()=>itemChange(row.Bname, row.Bid)}/></div>
+			   <div key={key} className="col-xs-6 col-md-4">{row[disName]}<input type="checkbox" value={row[idName]} checked={itemChecks[row[idName]].isChecked} name="behaviors" onChange={()=>itemChange(row[disName], row[idName])}/></div>
 			);
 		});
 		return items;
@@ -145,4 +148,10 @@ var TaskChoosePanel = React.createClass({
 
 
 });
+
+TaskChoosePanel.propTypes = {  
+  saveName: React.PropTypes.string.isRequired,  
+  itemIdName: React.PropTypes.string.isRequired,  
+  itemDisName: React.PropTypes.string.isRequired,  
+};  
 
