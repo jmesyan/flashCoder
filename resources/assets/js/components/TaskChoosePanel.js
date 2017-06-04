@@ -18,12 +18,13 @@ var TaskChoosePanel = React.createClass({
 		        text: '确认',
 		        type:'func',
 		        func:function(){}  
-		      }  
+		      },
 	    };
 		return {
 			confirmParams: confirmParams,
 			chooseList:[],
-			insertIndex:0
+			insertIndex:0,
+			deleteIndex:null,
 		};
 	},
 	componentWillMount: function() {
@@ -75,18 +76,8 @@ var TaskChoosePanel = React.createClass({
 		this.state.itemChecks[itemId].isChecked = isChecked;
 		this.setState({itemChecks:this.state.itemChecks});
 		if (isChecked){
-			var length = 3;
-			var desc = "确认选择？ 选择事件顺序：<select name='order' refs='itemOrder' onChange={this._itemInsertOrder}>";
-			if (length > 0){
-				for (var k= 0; k <length;k++){
-					desc += ("<option value='"+k+"'>"+(k+1)+"<\/option>");
-				}
-			}else {
-				desc += ("<option value='0'>1<\/option>");
-			}
-			
-			desc += "<\/select>";
-			this.state.confirmParams.desc = desc;
+			var length = this.state.chooseList.length+1;
+			this.state.confirmParams.desc = <OrderSelect chooseLength={length} itemInsertOrder={itemInsertOrder} />;
 			var itemChoose = this._itemChoose;
 			var itemCancel = this._itemCancel;
 			this.state.confirmParams.leftBtn.func = ()=>itemCancel(itemId);
@@ -97,30 +88,55 @@ var TaskChoosePanel = React.createClass({
 		
 	},
 
-	_itemInsertOrder:function(){
-		console.log(this.refs.itemOrder)
+	_itemInsertOrder:function(order){
+		this.setState({insertIndex:order})
+	},
+
+	_deleteChoose:function(){
+		var deleteIndex = this.state.deleteIndex;
+		if (deleteIndex != null) {
+			this.state.chooseList.splice(deleteIndex,1);
+		}	
+		this.setState({chooseList:this.state.chooseList, deleteIndex:null});
+		$("#Confirm").modal("hide");
+	},
+
+	_deleteCancel:function(){
+		this.setState({deleteIndex:null});
+		$("#Confirm").modal("hide");
+	},
+
+	_itemDelete:function(order){
+		var deleteChoose = this._deleteChoose;
+		var deleteCancel = this._deleteCancel;
+		this.state.confirmParams.desc = "确认删除该事件？";
+		this.state.confirmParams.leftBtn.func = ()=>deleteCancel();
+		this.state.confirmParams.rightBtn.func = ()=>deleteChoose();
+		this.setState({confirmParams:this.state.confirmParams, deleteIndex:order});
+		$("#Confirm").modal("show");
 	},
 
 	_renderComposite:function(){
-		return (
-			""
-		);
+		var composites = [];
+		var itemDelete = this._itemDelete;
+		this.state.chooseList.map(function(row,key){
+			composites.push(<span key={key}><a href="javascript:;" onClick={()=>itemDelete(key)} >{row.itemName}</a>=></span>);
+		});
+		return composites;
 	},
 
 	_itemCancel:function(itemId){
 		 this.state.itemChecks[itemId].isChecked = false;
 		 this.setState({itemChecks:this.state.itemChecks});
 		 $("#Confirm").modal("hide");
+		 this.setState({insertIndex:0})
 
 	},
 
 	_itemChoose:function(itemName,itemId){
-		this.props.chooseList.push(
-			{itemId:itemId,itemName:itemName}
-		);
-
+		this._insert(this.state.chooseList, this.state.insertIndex, {itemId:itemId,itemName:itemName});
+		this.setState({chooseList:this.state.chooseList});
 		this._itemCancel(itemId);
-
 	},
 
 	_insert:function(arr, index, item){

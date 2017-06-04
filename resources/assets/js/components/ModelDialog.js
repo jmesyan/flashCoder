@@ -10,7 +10,7 @@ var ModelDialog = React.createClass({
 	        <h4 className="modal-title">{props.title}</h4>
 	      </div>
 	      <div className="modal-body">
-	        <p dangerouslySetInnerHTML={{__html: props.desc}}></p>
+	       {props.desc}
 	      </div>
 	      <div className="modal-footer">
 	      { this.props.leftBtn.type == 'close' ? <button type="button" className="btn btn-primary" data-dismiss="modal">{props.leftBtn.text}</button>: <button type="button" className="btn btn-primary" onClick={this.props.leftBtn.func.bind(this)}>{props.leftBtn.text}</button>}
