@@ -17,7 +17,7 @@ func (b *OpenFile) Execute(params map[string]string, lastRes interface{}) interf
 		utils.CheckError(err)
 		return fd
 	} else {
-		return nil
+		return false
 	}
 
 }

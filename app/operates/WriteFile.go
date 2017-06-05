@@ -20,8 +20,8 @@ func (b *WriteFile) Execute(params map[string]string, lastRes interface{}) inter
 			last.MethodByName("Write").Call(in)
 			return lastRes
 		}
-		return nil
+		return true
 	} else {
-		return nil
+		return false
 	}
 }

@@ -53,6 +53,13 @@ func (c *TaskController) Add(r *http.Request, w http.ResponseWriter) {
 				} else {
 					c.Error(w, "添加任务失败,请重试", "")
 				}
+			} else {
+				res := models.Task.AddCompositeTask(taskName, itemList)
+				if res {
+					c.Success(w, "添加任务成功", "/task/index")
+				} else {
+					c.Error(w, "添加任务失败,请重试", "")
+				}
 			}
 		}
 	} else {
@@ -107,7 +114,7 @@ func (c *TaskController) TaskExecute(r *http.Request, w http.ResponseWriter) {
 						in := make([]reflect.Value, 2)
 						in[0] = reflect.ValueOf(paramsList)
 						if k == 0 {
-							in[1] = reflect.ValueOf(0)
+							in[1] = reflect.ValueOf(true)
 						} else {
 							in[1] = reflect.ValueOf(lastRes)
 						}

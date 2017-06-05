@@ -98,6 +98,50 @@ func (m *TaskModel) AddBasicTask(name string, berhaviors []TaskItem) bool {
 	return true
 }
 
+func (m *TaskModel) AddCompositeTask(name string, basicTasks []TaskItem) bool {
+	tx, err := DB.TransBegin() //使用事务确保mysql数据表类型为Innodb
+	if err != nil {
+		return false
+	}
+
+	//添加一个任务
+	sql := "insert into flash_task(tname, tcate, tsubs, addtime, updtime) values(?, ?, ?, ?, ?)"
+	contents := make([]interface{}, 5)
+	contents[0] = name
+	contents[1] = 2
+	json, err := json.Marshal(basicTasks)
+	if err != nil {
+		return false
+	}
+	contents[2] = string(json)
+	contents[3] = time.Now().Unix()
+	contents[4] = contents[3]
+	ctid, err := DB.TransInsert(tx, sql, contents)
+	if err != nil {
+		tx.Rollback()
+		return false
+	}
+
+	//添加任务行为序列
+	for k, v := range basicTasks {
+		tid := v.ItemId
+		torder := k
+		behaviors := m.GetTaskBehavior(tid, 1)
+		for _, v1 := range behaviors {
+			sql = "insert into flash_task_behavior(bid, tid, ctid, border, torder, paramsin) values(?, ?, ?, ?, ?, ?)"
+			contents = []interface{}{v1.Bid, tid, ctid, v1.Border, torder, v1.Paramsin}
+			_, err := DB.TransInsert(tx, sql, contents)
+			if err != nil {
+				tx.Rollback()
+				return false
+			}
+		}
+	}
+
+	tx.Commit()
+	return true
+}
+
 func (m *TaskModel) GetTask(tid int64) FlashTask {
 	sql := "select * from flash_task where tid = ?"
 	condition := []interface{}{tid}

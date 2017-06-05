@@ -6,7 +6,7 @@ var TaskChoosePanel = React.createClass({
 	},
 	getInitialState: function() {
 		let confirmParams = {
-	     	  id:"Confirm",  
+	     	  id:this.props.dialogName,  
 		      title: '提醒',  
 		      desc: '确认选择?',  
 		      leftBtn: {  
@@ -86,7 +86,7 @@ var TaskChoosePanel = React.createClass({
 			this.state.confirmParams.leftBtn.func = ()=>itemCancel(itemId);
 			this.state.confirmParams.rightBtn.func = ()=>itemChoose(itemName, itemId);
 			this.setState({confirmParams:this.state.confirmParams});
-			$("#Confirm").modal("show");
+			$("#"+this.props.dialogName).modal("show");
 		}
 		
 	},
@@ -101,12 +101,12 @@ var TaskChoosePanel = React.createClass({
 			this.state.chooseList.splice(deleteIndex,1);
 		}	
 		this.setState({chooseList:this.state.chooseList, deleteIndex:null});
-		$("#Confirm").modal("hide");
+		$("#"+this.props.dialogName).modal("hide");
 	},
 
 	_deleteCancel:function(){
 		this.setState({deleteIndex:null});
-		$("#Confirm").modal("hide");
+		$("#"+this.props.dialogName).modal("hide");
 	},
 
 	_itemDelete:function(order){
@@ -116,7 +116,7 @@ var TaskChoosePanel = React.createClass({
 		this.state.confirmParams.leftBtn.func = ()=>deleteCancel();
 		this.state.confirmParams.rightBtn.func = ()=>deleteChoose();
 		this.setState({confirmParams:this.state.confirmParams, deleteIndex:order});
-		$("#Confirm").modal("show");
+		$("#"+this.props.dialogName).modal("show");
 	},
 
 	_renderComposite:function(){
@@ -131,7 +131,7 @@ var TaskChoosePanel = React.createClass({
 	_itemCancel:function(itemId){
 		 this.state.itemChecks[itemId].isChecked = false;
 		 this.setState({itemChecks:this.state.itemChecks});
-		 $("#Confirm").modal("hide");
+		$("#"+this.props.dialogName).modal("hide");
 		 this.setState({insertIndex:0})
 
 	},
@@ -153,5 +153,6 @@ TaskChoosePanel.propTypes = {
   saveName: React.PropTypes.string.isRequired,  
   itemIdName: React.PropTypes.string.isRequired,  
   itemDisName: React.PropTypes.string.isRequired,  
+  dialogName: React.PropTypes.string.isRequired,  
 };  
 

@@ -57,12 +57,12 @@
 	);
 
 	ReactDOM.render(
-	  <TaskChoosePanel itemList={behaviorList} saveName="basicTaskBehaviors" itemIdName="Bid" itemDisName="Bname"/>,
+	  <TaskChoosePanel itemList={behaviorList} saveName="basicTaskBehaviors" itemIdName="Bid" itemDisName="Bname" dialogName="basicConfirm"/>,
 	  document.getElementById('BasicTask')
 	);
 
   ReactDOM.render(
-    <TaskChoosePanel itemList={basicTaskList} saveName="compositeTaskBasics" itemIdName="Tid" itemDisName="Tname"/>,
+    <TaskChoosePanel itemList={basicTaskList} saveName="compositeTaskBasics" itemIdName="Tid" itemDisName="Tname" dialogName="compositeConfirm"/>,
     document.getElementById('CompositeTask')
   );
 </script>
