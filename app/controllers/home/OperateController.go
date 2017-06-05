@@ -34,10 +34,19 @@ func (c *OperateController) Add(r *http.Request, w http.ResponseWriter) {
 			c.Error(w, "操作名称或者标识不能为空", "")
 			return
 		} else {
-			//检查是否存在标识
-
+			remark := "-"
+			if len(r.Form["remark"]) > 0 {
+				remark = r.Form["remark"][0]
+			}
+			opname := r.Form["opname"][0]
+			optag := r.Form["optag"][0]
+			//检查操作名称是否存在
+			if models.Operate.IsExistOperate(0, optag) {
+				c.Error(w, "操作标识已存在，请调整", "")
+				return
+			}
 			//加入数据
-			models.Operate.AddOperate(r.Form["opname"][0], r.Form["optag"][0], r.Form["remark"][0])
+			models.Operate.AddOperate(opname, optag, remark)
 			c.Success(w, "保存数据成功", "/operate/index")
 			return
 		}
@@ -56,9 +65,11 @@ func (c *OperateController) Delete(r *http.Request, w http.ResponseWriter) {
 		return
 	} else {
 		//删除前检查数据是否被使用
-
+		if models.Operate.IsOperateUsed(opid) {
+			c.Error(w, "该操作已被使用，无法删除", "")
+			return
+		}
 		//删除数据
-
 		models.Operate.DeleteOperate(opid)
 		c.Success(w, "删除数据成功", "")
 		return

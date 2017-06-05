@@ -47,10 +47,10 @@ func (m *BehaviorModel) AddBehavior(bname string, opid int, paramsdef []byte, re
 	return lastid
 }
 
-func (m *BehaviorModel) UpdateBehavior(bid int, bname string, opid int, paramsdef []byte, remark string) bool {
-	sql := "update flash_behavior set opid=?, bname=?, paramsdef=?, remark=?, updtime=? where bid=?"
+func (m *BehaviorModel) UpdateBehavior(bid int, bname string, paramsdef []byte, remark string) bool {
+	sql := "update flash_behavior set bname=?, paramsdef=?, remark=?, updtime=? where bid=?"
 	updtime := time.Now().Unix()
-	params := []interface{}{opid, bname, paramsdef, remark, updtime, bid}
+	params := []interface{}{bname, paramsdef, remark, updtime, bid}
 	err := DB.Update(sql, params)
 	if err != nil {
 		return false
@@ -67,15 +67,28 @@ func (m *BehaviorModel) GetBehavior(bid int64) FlashBehavior {
 	utils.CheckError(err)
 	var res []FlashBehavior
 	json.Unmarshal([]byte(result), &res)
-	return res[0]
+	if len(res) > 0 {
+		return res[0]
+	} else {
+		return FlashBehavior{}
+	}
 }
 
-func (m *BehaviorModel) BehaviorTest() []FlashBehavior {
-	sql := "select * from flash_behavior where bid in(2, 3, 4) order by bid asc"
-	condition := make([]interface{}, 0)
-	result, err := DB.Select(sql, condition)
-	utils.CheckError(err)
-	var res []FlashBehavior
-	json.Unmarshal([]byte(result), &res)
-	return res
+func (m *BehaviorModel) IsExistBehavior(bid int, bname string) bool {
+	sql := "select count(opid) as count from flash_behavior where bname = ? and bid <> ?"
+	condition := make([]interface{}, 2)
+	condition[0] = bname
+	condition[1] = bid
+	var count int
+	res := []interface{}{&count}
+	err := DB.SelectOne(sql, condition, res)
+	if err != nil {
+		return false
+	} else {
+		if count > 0 {
+			return true
+		} else {
+			return false
+		}
+	}
 }

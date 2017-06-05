@@ -98,3 +98,40 @@ func (m *OperateModel) GetOperateTagById(opid int64) string {
 		return optag
 	}
 }
+
+func (m *OperateModel) IsExistOperate(opid int, optag string) bool {
+	sql := "select count(opid) as count from flash_operate where optag = ? and opid <> ?"
+	condition := make([]interface{}, 2)
+	condition[0] = optag
+	condition[1] = opid
+	var count int
+	res := []interface{}{&count}
+	err := DB.SelectOne(sql, condition, res)
+	if err != nil {
+		return false
+	} else {
+		if count > 0 {
+			return true
+		} else {
+			return false
+		}
+	}
+}
+
+func (m *OperateModel) IsOperateUsed(opid int) bool {
+	sql := "select count(tbid) as count from flash_task_behavior as a left join flash_behavior as b on a.bid = b.bid where b.opid=? "
+	condition := make([]interface{}, 1)
+	condition[0] = opid
+	var count int
+	res := []interface{}{&count}
+	err := DB.SelectOne(sql, condition, res)
+	if err != nil {
+		return false
+	} else {
+		if count > 0 {
+			return true
+		} else {
+			return false
+		}
+	}
+}
