@@ -90,7 +90,7 @@ func (c *TaskController) TaskExecute(r *http.Request, w http.ResponseWriter) {
 		} else {
 			td, err := strconv.Atoi(tidstr)
 			if err != nil {
-				c.Error(w, "任务id因为整数", "")
+				c.Error(w, "任务id应该是整数", "")
 				return
 			}
 			tid = int64(td)
@@ -128,5 +128,65 @@ func (c *TaskController) TaskExecute(r *http.Request, w http.ResponseWriter) {
 				c.Error(w, "任务不存在", "")
 			}
 		}
+	}
+}
+
+func (c *TaskController) EditTaskBehaviors(r *http.Request, w http.ResponseWriter) {
+	if r.Method == "GET" {
+		r.ParseForm()
+		var tid int64
+		tidstr := r.Form["tid"][0]
+		if len(tidstr) <= 0 {
+			c.Error(w, "任务信息不全", "")
+		} else {
+			td, err := strconv.Atoi(tidstr)
+			if err != nil {
+				c.Error(w, "任务id应该是整数", "")
+				return
+			}
+			tid = int64(td)
+			task := models.Task.GetTask(tid)
+			if task.Tid > 0 {
+				taskBehavior := models.Task.GetTaskBehavior(task.Tid, task.Tcate)
+				data := map[string]interface{}{
+					"list": taskBehavior,
+				}
+				c.View(w, data)
+			} else {
+				c.Error(w, "任务不存在", "")
+			}
+		}
+	} else {
+		c.Error(w, "操作失败", "")
+	}
+
+}
+
+func (c *TaskController) TaskBehaviorParams(r *http.Request, w http.ResponseWriter) {
+	if r.Method == "GET" {
+		r.ParseForm()
+		var tbid int64
+		tbidstr := r.Form["tbid"][0]
+		if len(tbidstr) <= 0 {
+			c.Error(w, "任务信息不全", "")
+		} else {
+			td, err := strconv.Atoi(tbidstr)
+			if err != nil {
+				c.Error(w, "任务id应该是整数", "")
+				return
+			}
+			tbid = int64(td)
+			behavior := models.Task.GetTaskBehaviorById(tbid)
+			if behavior.Bid > 0 {
+				data := map[string]interface{}{
+					"list": behavior,
+				}
+				c.View(w, data)
+			} else {
+				c.Error(w, "行为不存在", "")
+			}
+		}
+	} else {
+		c.Error(w, "操作失败", "")
 	}
 }

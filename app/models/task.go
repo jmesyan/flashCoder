@@ -3,6 +3,7 @@ package models
 import (
 	"encoding/json"
 	"flashCoder/utils"
+	"fmt"
 	"time"
 )
 
@@ -155,7 +156,7 @@ func (m *TaskModel) GetTask(tid int64) FlashTask {
 func (m *TaskModel) GetTaskBehavior(tid int64, tcate uint8) []FlashTaskBehavior {
 	var sql string
 	if tcate == 1 {
-		sql = "select * from flash_task_behavior where tid = ? order by border asc"
+		sql = "select * from flash_task_behavior where tid = ? and ctid = 0 order by border asc"
 	} else {
 		sql = "select * from flash_task_behavior where ctid = ? order by torder asc, border asc"
 	}
@@ -167,4 +168,16 @@ func (m *TaskModel) GetTaskBehavior(tid int64, tcate uint8) []FlashTaskBehavior 
 	var res []FlashTaskBehavior
 	json.Unmarshal([]byte(result), &res)
 	return res
+}
+
+func (m *TaskModel) GetTaskBehaviorById(tbid int64) FlashTaskBehavior {
+	sql := "select * from flash_task_behavior where tbid = ?"
+	var condition []interface{}
+	condition = make([]interface{}, 1)
+	condition[0] = tbid
+	result, err := DB.Select(sql, condition)
+	utils.CheckError(err)
+	var res []FlashTaskBehavior
+	json.Unmarshal([]byte(result), &res)
+	return res[0]
 }
