@@ -3,7 +3,7 @@ package models
 import (
 	"encoding/json"
 	"flashCoder/utils"
-	"fmt"
+	// "fmt"
 	"time"
 )
 
@@ -180,4 +180,16 @@ func (m *TaskModel) GetTaskBehaviorById(tbid int64) FlashTaskBehavior {
 	var res []FlashTaskBehavior
 	json.Unmarshal([]byte(result), &res)
 	return res[0]
+}
+
+func (m *TaskModel) UpdateTaskBehaviorById(tbid int64, paramsin []byte) bool {
+	sql := "update flash_task_behavior set paramsin = ? where tbid = ?"
+	params := []interface{}{paramsin, tbid}
+	err := DB.Update(sql, params)
+	if err != nil {
+		return false
+	} else {
+		return true
+	}
+
 }

@@ -163,7 +163,31 @@ func (c *TaskController) EditTaskBehaviors(r *http.Request, w http.ResponseWrite
 }
 
 func (c *TaskController) TaskBehaviorParams(r *http.Request, w http.ResponseWriter) {
-	if r.Method == "GET" {
+	if r.Method == "POST" {
+		r.ParseForm()
+		var tbid int64
+		tbidstr := r.Form["tbid"][0]
+		if len(tbidstr) <= 0 {
+			c.Error(w, "任务信息不全", "")
+		} else {
+			td, err := strconv.Atoi(tbidstr)
+			if err != nil {
+				c.Error(w, "任务id应该是整数", "")
+				return
+			}
+			tbid = int64(td)
+			paramsin := r.Form["paramsList"][0]
+			models.Task.UpdateTaskBehaviorById(tbid, []byte(paramsin))
+			behavior := models.Task.GetTaskBehaviorById(tbid)
+			var tid int
+			if behavior.Ctid > 0 {
+				tid = int(behavior.Ctid)
+			} else {
+				tid = int(behavior.Tid)
+			}
+			c.Success(w, "行为更新成功", "/task/editTaskBehaviors?tid="+strconv.Itoa(tid))
+		}
+	} else {
 		r.ParseForm()
 		var tbid int64
 		tbidstr := r.Form["tbid"][0]
@@ -178,15 +202,16 @@ func (c *TaskController) TaskBehaviorParams(r *http.Request, w http.ResponseWrit
 			tbid = int64(td)
 			behavior := models.Task.GetTaskBehaviorById(tbid)
 			if behavior.Bid > 0 {
+				baseBehavior := models.Behavior.GetBehavior(behavior.Bid)
 				data := map[string]interface{}{
-					"list": behavior,
+					"base":   baseBehavior,
+					"params": behavior.Paramsin,
+					"tbid":   tbid,
 				}
 				c.View(w, data)
 			} else {
 				c.Error(w, "行为不存在", "")
 			}
 		}
-	} else {
-		c.Error(w, "操作失败", "")
 	}
 }

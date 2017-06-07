@@ -7,7 +7,7 @@
     var list = {{.list}};
     var handle = function(row, k){
     	var tbid = row.Tbid; 
-    	var url = "/task/taskExecute?tbid="+tbid;
+    	var url = "/task/taskBehaviorParams?tbid="+tbid;
 		return (
 			<td key={k}><a href={url} >编辑参数</a></td>
 		);
@@ -22,7 +22,7 @@
     ];
 	ReactDOM.render(
 	  <div>
-	    <TitleWithFunc title="任务参数" handleName="返回列表" handleUrl="#" handleFunc={back.bind(this,-1)}/>
+	    <TitleWithFunc title="任务参数" handleName="返回列表" handleUrl="/task/index" handleFunc={function(){}}/>
 	  	<TableWithHandle titles={titles} list={list}  disrow={disrow}/>
 	  </div>,
 	  document.getElementById('main')

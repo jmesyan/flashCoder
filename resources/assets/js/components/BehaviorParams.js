@@ -4,7 +4,8 @@ var BehaviorParams = React.createClass({
 			paramTypes:[{val:1,name:"文本"}, {val:2,name:"密码"}, {val:3,name:"编辑器"}],
 			paramsList:[],
 			editKey:null,
-			btype:"add"
+			btype:"add",
+			onlyEditContent:false,
 
 		};
 	},
@@ -122,7 +123,7 @@ var BehaviorParams = React.createClass({
 		            <div role="tabpanel"  className="tab-pane active" ref="home" id="home">
 		                 <div className={this.state.showUpdate? "hide":"show"}><TableWithHandle titles={titles} list={this.state.paramsList}  disrow={disrow}/></div>
 		                 <div className={this.state.showUpdate? "show":"hide"}>
-							<ParamsEditor type="update" paramsList={this.state.paramsList} editKey={this.state.editKey} updateSaveFunc={this.saveUpdateParams} undoUpdate={this.undoUpdate}/>
+							<ParamsEditor type="update" paramsList={this.state.paramsList} editKey={this.state.editKey} updateSaveFunc={this.saveUpdateParams} undoUpdate={this.undoUpdate} onlyEditContent={this.props.onlyEditContent}/>
 		                 </div>
 		            </div>
 		            {this.props.btype == "add" ? <div role="tabpanel" className="tab-pane" ref="settings" id="settings"><ParamsEditor type="add" paramsList={this.state.paramsList} addSaveFunc={this.saveAddParams}/></div>:""}
