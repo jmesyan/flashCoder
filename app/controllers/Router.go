@@ -9,5 +9,6 @@ var Router = map[string]interface{}{
 		"behavior": new(h.BehaviorController),
 		"operate":  new(h.OperateController),
 		"task":     new(h.TaskController),
+		"cron":     new(h.CronController),
 	},
 }

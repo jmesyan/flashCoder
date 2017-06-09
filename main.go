@@ -2,6 +2,7 @@ package main
 
 import (
 	ctr "flashCoder/app/controllers"
+	"flashCoder/app/kernel/cron"
 	"flashCoder/utils"
 	// "log"
 	// "fmt"
@@ -15,6 +16,9 @@ func main() {
 	ctr.AddstaticMap("/assets", "./resources/assets")
 	ctr.AddstaticMap("/components", "./resources/assets/js/components")
 	ctr.AddstaticMap("/favicon.ico", "./resources/assets/images/flash.ico")
+	//启动事件监听
+	crons := new(cron.CronWatcher)
+	crons.Watching()
 	//启动服务器
 	var Handler http.Handler
 	Handler = new(ctr.Controller)
