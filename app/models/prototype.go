@@ -39,12 +39,14 @@ type FlashTaskBehavior struct {
 }
 
 type FlashCron struct {
-	Crid   int64
-	Second uint8
-	Minute uint8
-	Hour   uint8
-	Day    uint8
-	Month  uint8
-	Week   uint8
-	Tid    int64
+	Crid    int64
+	Second  string
+	Minute  string
+	Hour    string
+	Day     string
+	Month   string
+	Week    string
+	Tid     int64
+	State   uint8
+	Addtime int64
 }

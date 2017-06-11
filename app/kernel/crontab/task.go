@@ -1,25 +1,56 @@
-package cron
+package crontab
 
 import (
 	"encoding/json"
+	"errors"
 	"flashCoder/app/models"
 	"flashCoder/app/operates"
 	"fmt"
 	"github.com/robfig/cron"
 	"reflect"
+	"strconv"
+	"strings"
+	"time"
 )
 
 var Task chan CronTask
 var CronTasks []CronTask
 var Handler *cron.Cron
 
-type CronWatcher struct {
+func Check(cron models.FlashCron) bool {
+	monthNow := int(time.Now().Month())
+	monthCron, err := getMaxDate(cron.Month)
+	if err == nil && monthNow > monthCron {
+		return false
+	}
+	return true
 }
 
-func (c *CronWatcher) Watching() {
+func getMaxDate(date string) (int, error) {
+	var err error
+	if strings.Contains(date, "*") || strings.Contains(date, "?") {
+		return 0, errors.New("the date is not num")
+	}
+
+	if strings.Contains(date, "-") {
+		result := strings.Split(date, "-")
+		res, err := strconv.Atoi(result[1])
+		return res, err
+	}
+
+	if strings.Contains(date, ",") {
+		result := strings.Split(date, ",")
+		res, err := strconv.Atoi(result[1])
+		return res, err
+	}
+
+	res, err := strconv.Atoi(date)
+	return res, err
+}
+
+func Watching() {
 	Task = make(chan CronTask)
-	Handler = cron.New()
-	Handler.Start()
+	Reload()
 	go func() {
 		for {
 			select {
@@ -28,6 +59,24 @@ func (c *CronWatcher) Watching() {
 			}
 		}
 	}()
+}
+
+func Reload() {
+	if Handler != nil {
+		Handler.Stop()
+	}
+	Handler = cron.New()
+	Handler.Start()
+	tasks := models.Cron.GetValidList()
+	for _, v := range tasks {
+		if Check(v) {
+			sep := " "
+			crontab := v.Second + sep + v.Minute + sep + v.Hour + sep + v.Day + sep + v.Month + sep + v.Week
+			fmt.Println(crontab)
+			task := CronTask{TaskId: v.Tid, Crontab: crontab}
+			Handler.AddJob(task.Crontab, task)
+		}
+	}
 }
 
 type CronTask struct {
