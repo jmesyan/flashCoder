@@ -40,6 +40,10 @@
 <script type="text/babel" src="/components/TaskChoosePanel.js"></script>
 <script type="text/babel" src="/components/OrderSelect.js"></script>
 <script type="text/babel" src="/components/ModelDialog.js"></script>
+<script type="text/javascript">
+  var behaviorList = {{.behaviorList}}
+  var basicTaskList = {{.basicTaskList}}
+</script>
 <script type="text/babel">
   $("#accordion").on('shown.bs.collapse',function(){
      if ($("#BasicTask").hasClass("in")){
@@ -49,8 +53,6 @@
      }
   });
   
-  var behaviorList = {{.behaviorList}}
-  var basicTaskList = {{.basicTaskList}}
 	ReactDOM.render(
 	  <TitleWithFunc title="添加任务" handleName="返回列表" handleUrl="#" handleFunc={back.bind(this,-1)}/>,
 	  document.getElementById('navi')

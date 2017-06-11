@@ -2,9 +2,11 @@
 <div id="main"></div>
 <script type="text/babel" src="/components/TitleWithFunc.js"></script>
 <script type="text/babel" src="/components/TableWithHandle.js"></script>
+<script type="text/javascript">
+	var list = {{.list}};
+</script>
 <script type="text/babel">
 	var titles = ["编号", "任务ID", "任务时序", "行为ID", "行为时序", "操作"];
-    var list = {{.list}};
     var handle = function(row, k){
     	var tbid = row.Tbid; 
     	var url = "/task/taskBehaviorParams?tbid="+tbid;

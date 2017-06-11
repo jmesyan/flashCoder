@@ -27,9 +27,11 @@
 <script type="text/babel" src="/components/BehaviorParams.js"></script>
 <script type="text/babel" src="/components/ParamsEditor.js"></script>
 <script type="text/babel" src="/components/TableWithHandle.js"></script>
-<script type="text/babel">
+<script type="text/javascript">
   var opid = {{.Opid}}
   var paramsList = eval({{.Paramsdef}})
+</script>
+<script type="text/babel">
   function opChange(ob){
     ob.setState({value:ob.props.value})
     return;

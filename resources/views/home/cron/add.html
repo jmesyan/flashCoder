@@ -59,6 +59,8 @@
 <script type="text/babel" src="/components/OrderSelect.js"></script>
 <script type="text/babel" src="/components/ModelDialog.js"></script>
 <script type="text/javascript">
+  var basicTaskList = {{.basicTaskList}}
+  var compositeTaskList = {{.compositeTaskList}}
   var regexps = {
     second:/^(((\d|([1-5]\d))|(\d|([1-5]\d))[-,](\d|([1-5]\d)))|(\*\/([1-9]|([1-5]\d)))|(\*))$/,
     minute:/^(((\d|([1-5]\d))|(\d|([1-5]\d))[-,](\d|([1-5]\d)))|(\*\/([1-9]|([1-5]\d)))|(\*))$/,
@@ -225,8 +227,6 @@
 
          }
  });
-  var basicTaskList = {{.basicTaskList}}
-  var compositeTaskList = {{.compositeTaskList}}
 	ReactDOM.render(
 	  <TitleWithFunc title="添加定时任务" handleName="返回列表" handleUrl="#" handleFunc={back.bind(this,-1)}/>,
 	  document.getElementById('navi')

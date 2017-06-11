@@ -3,6 +3,9 @@
 {{str2html .page}}
 <script type="text/babel" src="/components/TitleWithFunc.js"></script>
 <script type="text/babel" src="/components/TableWithHandle.js"></script>
+<script type="text/javascript">
+	 var list = {{.list}};
+</script>
 <script type="text/babel">
     //操作
     function deleteOperate(opid) {
@@ -11,7 +14,6 @@
     }
     //表格
 	var titles = ["编号", "操作名称", "操作标识", "添加时间", "操作", "备注"];
-    var list = {{.list}};
     var handle = function(row, k){
     	var opid = row.Opid;
 		return (
