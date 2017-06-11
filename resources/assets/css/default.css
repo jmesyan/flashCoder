@@ -15,7 +15,8 @@
 /*.bg-navi{background-image: linear-gradient(to bottom, #3380b7 0%, #2e6da4 100%); border-radius: 15px;}*/
 .bg-navi{background-image: url('/assets/images/bg_001.png'); border-radius: 15px;}
 .bgc-none{background-color: inherit !important;}
-.breadcrumb a{color: #ffffff !important;}
+.breadcrumb a{color: #337ab7 !important;}
+.breadcrumb a.active{color: #f0ad4e !important;}
 body .h1, .form-group{color:#fff !important;}
 /*body{background-color: #1a1c21 !important;}*/
 body{background-color: #f5f5f5!important;background:-webkit-linear-gradient(top,rgba(0,0,0,.58),rgba(0,0,0,.575),transparent); width: 100%;height: 100%;}
