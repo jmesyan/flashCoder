@@ -39,7 +39,7 @@ func (m *OperateModel) GetOperateListCount() int {
 	}
 }
 
-func (m *OperateModel) GetOperateCount(opid int) int {
+func (m *OperateModel) GetOperateCount(opid int64) int {
 	sql := "select count(opid) as count from flash_operate where opid = ?"
 	condition := []interface{}{opid}
 	var count int
@@ -52,7 +52,7 @@ func (m *OperateModel) GetOperateCount(opid int) int {
 	}
 }
 
-func (m *OperateModel) DeleteOperate(opid int) bool {
+func (m *OperateModel) DeleteOperate(opid int64) bool {
 	sql := "delete from flash_operate where opid = ?"
 	params := []interface{}{opid}
 	err := DB.Update(sql, params)
@@ -104,24 +104,6 @@ func (m *OperateModel) IsExistOperate(opid int, optag string) bool {
 	condition := make([]interface{}, 2)
 	condition[0] = optag
 	condition[1] = opid
-	var count int
-	res := []interface{}{&count}
-	err := DB.SelectOne(sql, condition, res)
-	if err != nil {
-		return false
-	} else {
-		if count > 0 {
-			return true
-		} else {
-			return false
-		}
-	}
-}
-
-func (m *OperateModel) IsOperateUsed(opid int) bool {
-	sql := "select count(tbid) as count from flash_task_behavior as a left join flash_behavior as b on a.bid = b.bid where b.opid=? "
-	condition := make([]interface{}, 1)
-	condition[0] = opid
 	var count int
 	res := []interface{}{&count}
 	err := DB.SelectOne(sql, condition, res)

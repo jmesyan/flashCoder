@@ -92,3 +92,27 @@ func (m *BehaviorModel) IsExistBehavior(bid int, bname string) bool {
 		}
 	}
 }
+
+func (m *BehaviorModel) DeleteBehavior(bid int64) bool {
+	sql := "delete from flash_behavior where bid = ?"
+	params := []interface{}{bid}
+	err := DB.Update(sql, params)
+	if err != nil {
+		return false
+	} else {
+		return true
+	}
+}
+
+func (m *BehaviorModel) GetOperateCountInBehavior(opid int64) int {
+	sql := "select count(bid) as count from flash_behavior where opid=?"
+	condition := []interface{}{opid}
+	var count int
+	res := []interface{}{&count}
+	err := DB.SelectOne(sql, condition, res)
+	if err != nil {
+		return 0
+	} else {
+		return count
+	}
+}

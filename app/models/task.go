@@ -193,3 +193,43 @@ func (m *TaskModel) UpdateTaskBehaviorById(tbid int64, paramsin []byte) bool {
 	}
 
 }
+
+func (m *TaskModel) GetBehaviorCountInTask(bid int64) int {
+	sql := "select count(tbid) as count from flash_task_behavior where bid=?"
+	condition := []interface{}{bid}
+	var count int
+	res := []interface{}{&count}
+	err := DB.SelectOne(sql, condition, res)
+	if err != nil {
+		return 0
+	} else {
+		return count
+	}
+}
+
+func (m *TaskModel) DeleteTask(tid int64) bool {
+	task := m.GetTask(tid)
+	tx, err := DB.TransBegin() //使用事务确保mysql数据表类型为Innodb
+	if err != nil {
+		return false
+	}
+	sql := "delete from flash_task where tid = ?"
+	params := []interface{}{tid}
+	err = DB.TransUpdate(tx, sql, params)
+	if err != nil {
+		tx.Rollback()
+		return false
+	}
+	behaviors := m.GetTaskBehavior(tid, task.Tcate)
+	for _, v1 := range behaviors {
+		sql = "delete from flash_task_behavior where tbid = ?"
+		params := []interface{}{v1.Tbid}
+		err = DB.TransUpdate(tx, sql, params)
+		if err != nil {
+			tx.Rollback()
+			return false
+		}
+	}
+	tx.Commit()
+	return true
+}

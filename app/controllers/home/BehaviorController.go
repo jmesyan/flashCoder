@@ -91,3 +91,26 @@ func (c *BehaviorController) Update(r *http.Request, w http.ResponseWriter) {
 		c.View(w, behavior)
 	}
 }
+
+func (c *BehaviorController) Delete(r *http.Request, w http.ResponseWriter) {
+	r.ParseForm()
+	var bid int64
+	bint, _ := strconv.Atoi(r.Form["bid"][0])
+	bid = int64(bint)
+	if bid < 1 {
+		c.Error(w, "参数不正确", "")
+		return
+	}
+	//检查行为是否已被任务使用
+	count := models.Task.GetBehaviorCountInTask(bid)
+	if count > 0 {
+		c.Error(w, "该行为已被任务使用", "")
+	} else {
+		if models.Behavior.DeleteBehavior(bid) {
+			c.Success(w, "删除成功", "")
+		} else {
+			c.Error(w, "删除失败", "")
+		}
+	}
+
+}

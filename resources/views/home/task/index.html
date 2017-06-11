@@ -10,8 +10,13 @@
     	var tid = row.Tid; 
     	var excuteUrl = "/task/taskExecute?tid="+tid;
     	var editUrl = "/task/editTaskBehaviors?tid="+tid;
+    	var deleteUrl = "/task/delete?tid="+tid;
 		return (
-			<td key={k}><a href={excuteUrl} >执行</a><a className="ml-20" href={editUrl} >编辑行为</a></td>
+			<td key={k}>
+			<a href={excuteUrl} >执行</a>
+			<a className="ml-20" href={deleteUrl}>删除</a>
+			<a className="ml-20" href={editUrl} >编辑行为</a>
+			</td>
 		);
     }
     var disrow = [

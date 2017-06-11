@@ -8,8 +8,12 @@
     var list = {{.list}};
     var handle = function(row, k){
     	var bid = row.Bid, url = "/behavior/update?bid="+bid;
+    	var deleteUrl = "/behavior/delete?bid="+bid;
 		return (
-			<td key={k}><a href={url} >修改</a></td>
+			<td key={k}>
+				<a href={url} >修改</a>
+				<a href={deleteUrl} className="ml-20">删除</a>
+			</td>
 		);
     }
     var disrow = [

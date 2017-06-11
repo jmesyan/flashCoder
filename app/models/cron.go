@@ -98,3 +98,16 @@ func (m *CronModel) DeleteCron(crid int64) bool {
 		return true
 	}
 }
+
+func (m *CronModel) GetTaskCountInCron(tid int64) int {
+	sql := "select count(crid) as count from flash_cron where tid=?"
+	condition := []interface{}{tid}
+	var count int
+	res := []interface{}{&count}
+	err := DB.SelectOne(sql, condition, res)
+	if err != nil {
+		return 0
+	} else {
+		return count
+	}
+}

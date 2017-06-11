@@ -215,3 +215,26 @@ func (c *TaskController) TaskBehaviorParams(r *http.Request, w http.ResponseWrit
 		}
 	}
 }
+
+func (c *TaskController) Delete(r *http.Request, w http.ResponseWriter) {
+	r.ParseForm()
+	var tid int64
+	tint, _ := strconv.Atoi(r.Form["tid"][0])
+	tid = int64(tint)
+	if tid < 1 {
+		c.Error(w, "参数不正确", "")
+		return
+	}
+	//检查行为是否已被任务使用
+	count := models.Cron.GetTaskCountInCron(tid)
+	if count > 0 {
+		c.Error(w, "该任务存在于计划当中", "")
+	} else {
+		if models.Task.DeleteTask(tid) {
+			c.Success(w, "删除成功", "")
+		} else {
+			c.Error(w, "删除失败", "")
+		}
+	}
+
+}
