@@ -3,9 +3,11 @@
 {{str2html .page}}
 <script type="text/babel" src="/components/TitleWithFunc.js"></script>
 <script type="text/babel" src="/components/TableWithHandle.js"></script>
+<script type="text/javascript">
+	var list = {{.list}};
+</script>
 <script type="text/babel">
 	var titles = ["编号", "任务ID", "执行计划", "状态", "操作"];
-    var list = {{.list}};
     var crontab = function(v, k){
     	var sep = " ";
     	var cron = v.Second + sep + v.Minute + sep + v.Hour + sep + v.Day + sep + v.Month + sep + v.Week;
