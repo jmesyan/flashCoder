@@ -10,3 +10,9 @@
 .fl{float: left}
 .fr{float: right}
 .fc-p64{padding: 6px 4px !important;}
+.bg-image{background-image: linear-gradient(to bottom, #3337b7 0%, #268876 100%);}
+.bg-navi{background-image: linear-gradient(to bottom, #a333b7 0%, #622688 100%); border-radius: 15px;}
+.bgc-none{background-color: inherit !important;}
+.breadcrumb a{color: #ffffff !important;}
+body .h1, .form-group{color:#fff !important;}
+table {background: #fff !important;}

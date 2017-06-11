@@ -1,3 +1,52 @@
 {{template "header" .}}
-<img src="/assets/images/timg.jpg">
+<div id="main"></div>
+{{str2html .page}}
+<script type="text/babel" src="/components/TitleWithFunc.js"></script>
+<script type="text/babel" src="/components/TableWithHandle.js"></script>
+<script type="text/babel">
+	var titles = ["编号", "任务ID", "执行计划", "状态", "操作"];
+    var list = {{.list}};
+    var crontab = function(v, k){
+    	var sep = " ";
+    	var cron = v.Second + sep + v.Minute + sep + v.Hour + sep + v.Day + sep + v.Month + sep + v.Week;
+		return (
+			<td key={k}>{cron}</td>
+		);
+    }
+
+    var state = function(row, k){
+    	var stateDesc = row.state == 1?"关闭":"开启";
+		return (
+			<td key={k}>{stateDesc}</td>
+		);
+    }
+
+    var handle = function(row, k){
+    	var crid = row.Crid, url = "/cron/update?crid="+crid;
+    	var updateDesc = row.State == 1? "开启":"关闭";
+    	var updateUrl = "/cron/updateState?crid="+crid;
+    	var deleteUrl = "/cron/delete?crid="+crid;
+		return (
+			<td key={k}>
+			<a href={url} >修改</a>
+			<a href={updateUrl} className="ml-20">{updateDesc}</a>
+			<a href={deleteUrl} className="ml-20">删除</a>
+			</td>
+		);
+    }
+    var disrow = [
+		{name:"Crid"},
+		{name:"Tid"},
+		{name:false, handle:crontab},
+		{name:false, handle:state},
+		{name:false, handle:handle},
+    ];
+	ReactDOM.render(
+	  <div>
+	  <TitleWithFunc title="定时任务列表" handleName="添加定时任务" handleUrl="/cron/add" handleFunc={function(){return false}}/>
+	  <TableWithHandle titles={titles} list={list}  disrow={disrow}/>
+	  </div>,
+	  document.getElementById('main')
+	);
+</script>
 {{template "footer" .}}
