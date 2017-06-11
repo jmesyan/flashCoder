@@ -22,9 +22,16 @@
     }
 
     var handle = function(row, k){
-    	var bid = row.Bid, url = "/cron/update?bid="+bid;
+    	var crid = row.Crid, url = "/cron/update?crid="+crid;
+    	var updateDesc = row.State == 1? "开启":"关闭";
+    	var updateUrl = "/cron/updateState?crid="+crid;
+    	var deleteUrl = "/cron/delete?crid="+crid;
 		return (
-			<td key={k}><a href={url} >修改</a></td>
+			<td key={k}>
+			<a href={url} >修改</a>
+			<a href={updateUrl} className="ml-20">{updateDesc}</a>
+			<a href={deleteUrl} className="ml-20">删除</a>
+			</td>
 		);
     }
     var disrow = [

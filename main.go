@@ -18,7 +18,7 @@ func main() {
 	controllers.AddstaticMap("/favicon.ico", "./resources/assets/images/flash.ico")
 	//启动事件监听
 	crontab.Watching()
-	//启动服务器
+	//启动服务器c.Error(w, "参数不正确", "")
 	var Handler http.Handler
 	Handler = new(controllers.Controller)
 	s := &http.Server{

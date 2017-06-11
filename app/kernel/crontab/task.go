@@ -51,14 +51,14 @@ func getMaxDate(date string) (int, error) {
 func Watching() {
 	Task = make(chan CronTask)
 	Reload()
-	go func() {
-		for {
-			select {
-			case task := <-Task:
-				Handler.AddJob(task.Crontab, task)
-			}
-		}
-	}()
+	// go func() {
+	// 	for {
+	// 		select {
+	// 		case task := <-Task:
+	// 			Handler.AddJob(task.Crontab, task)
+	// 		}
+	// 	}
+	// }()
 }
 
 func Reload() {

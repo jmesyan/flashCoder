@@ -23,7 +23,7 @@ func (m *CronModel) GetCron(crid int64) FlashCron {
 	}
 }
 
-func (m *CronModel) updateCronState(crid int64, state uint8) bool {
+func (m *CronModel) UpdateCronState(crid int64, state uint8) bool {
 	sql := "update flash_cron set state=? where crid=?"
 	params := []interface{}{state, crid}
 	err := DB.Update(sql, params)
@@ -75,4 +75,26 @@ func (m *CronModel) AddCron(tid int64, second, minute, hour, day, month, week st
 	lastid, err := DB.Insert(sql, contents)
 	utils.CheckError(err)
 	return lastid
+}
+
+func (m *CronModel) UpdateCron(crid int64, second, minute, hour, day, month, week string) bool {
+	sql := "update flash_cron set second = ?,minute=?, hour=?,day=?,month=?,week=? where crid = ?"
+	params := []interface{}{second, minute, hour, day, month, week, crid}
+	err := DB.Update(sql, params)
+	if err != nil {
+		return false
+	} else {
+		return true
+	}
+}
+
+func (m *CronModel) DeleteCron(crid int64) bool {
+	sql := "delete from flash_cron where crid = ?"
+	params := []interface{}{crid}
+	err := DB.Update(sql, params)
+	if err != nil {
+		return false
+	} else {
+		return true
+	}
 }

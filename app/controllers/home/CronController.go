@@ -7,6 +7,7 @@ import (
 	"flashCoder/app/kernel/html"
 	"flashCoder/app/models"
 	"net/http"
+	"strconv"
 	// "time"
 )
 
@@ -68,4 +69,91 @@ func (c *CronController) Add(r *http.Request, w http.ResponseWriter) {
 
 		c.View(w, data)
 	}
+}
+
+func (c *CronController) Update(r *http.Request, w http.ResponseWriter) {
+	r.ParseForm()
+	var crid int64
+	crint, _ := strconv.Atoi(r.Form["crid"][0])
+	crid = int64(crint)
+	if crid < 1 {
+		c.Error(w, "参数不正确", "")
+		return
+	}
+
+	if r.Method == "POST" {
+		second := r.Form["second"][0]
+		minute := r.Form["minute"][0]
+		hour := r.Form["hour"][0]
+		day := r.Form["day"][0]
+		month := r.Form["month"][0]
+		week := r.Form["week"][0]
+		if len(second) > 0 && len(minute) > 0 && len(hour) > 0 && len(day) > 0 && len(month) > 0 && len(week) > 0 {
+			if models.Cron.UpdateCron(crid, second, minute, hour, day, month, week) {
+				crontab.Reload()
+				c.Success(w, "更新数据成功", "/cron/index")
+			} else {
+				c.Error(w, "更新数据失败", "")
+			}
+		} else {
+			c.Error(w, "请填写数据", "")
+		}
+	} else {
+		cron := models.Cron.GetCron(crid)
+		task := models.Task.GetTask(cron.Tid)
+		data := map[string]interface{}{
+			"cron": cron,
+			"task": task,
+		}
+
+		c.View(w, data)
+
+	}
+}
+
+func (c *CronController) UpdateState(r *http.Request, w http.ResponseWriter) {
+	r.ParseForm()
+	var crid int64
+	crint, _ := strconv.Atoi(r.Form["crid"][0])
+	crid = int64(crint)
+	if crid < 1 {
+		c.Error(w, "参数不正确", "")
+		return
+	}
+	cron := models.Cron.GetCron(crid)
+	var state uint8
+	var stateDesc string
+	if cron.State == 1 {
+		state = 0
+		stateDesc = "开启"
+	} else {
+		state = 1
+		stateDesc = "关闭"
+	}
+
+	if models.Cron.UpdateCronState(crid, state) {
+		crontab.Reload()
+		message := stateDesc + "成功！"
+		c.Success(w, message, "")
+	} else {
+		c.Error(w, "操作失败", "")
+	}
+}
+
+func (c *CronController) Delete(r *http.Request, w http.ResponseWriter) {
+	r.ParseForm()
+	var crid int64
+	crint, _ := strconv.Atoi(r.Form["crid"][0])
+	crid = int64(crint)
+	if crid < 1 {
+		c.Error(w, "参数不正确", "")
+		return
+	}
+	if models.Cron.DeleteCron(crid) {
+		crontab.Reload()
+		c.Success(w, "删除成功", "")
+	} else {
+		c.Error(w, "删除失败", "")
+	}
+
 }
