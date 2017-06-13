@@ -16,7 +16,6 @@ var Operates = map[string]interface{}{
 func init() {
 	WinMsg = make(chan []byte, 255)
 	go func() {
-		fmt.Println(2222222)
 		err := ui.Main(func() {
 			w := ui.NewWindow("消息提醒", 400, 300, false)
 			defer ui.Quit()
