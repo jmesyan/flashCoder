@@ -36,10 +36,14 @@ func (c *BehaviorController) Add(r *http.Request, w http.ResponseWriter) {
 			if len(r.Form["remark"]) > 0 {
 				remark = r.Form["remark"][0]
 			}
-			//检查行为是否存在
-
+			bname := r.Form["bname"][0]
+			//检查行为名称是否存在
+			if models.Behavior.IsExistBehavior(0, bname) {
+				c.Error(w, "行为名已存在，请调整", "")
+				return
+			}
 			//添加数据
-			models.Behavior.AddBehavior(r.Form["bname"][0], opid, []byte(r.Form["paramsList"][0]), remark)
+			models.Behavior.AddBehavior(bname, opid, []byte(r.Form["paramsList"][0]), remark)
 			c.Success(w, "行为添加成功", "/behavior/index")
 		} else {
 			c.Error(w, "数据不能为空", "")
@@ -53,19 +57,23 @@ func (c *BehaviorController) Add(r *http.Request, w http.ResponseWriter) {
 func (c *BehaviorController) Update(r *http.Request, w http.ResponseWriter) {
 	if r.Method == "POST" {
 		r.ParseForm()
-		if len(r.Form["bid"]) > 0 && len(r.Form["bname"]) > 0 && len(r.Form["operate"]) > 0 && len(r.Form["paramsList"]) > 0 {
+		if len(r.Form["bid"]) > 0 && len(r.Form["bname"]) > 0 && len(r.Form["paramsList"]) > 0 {
 			bid, err := strconv.Atoi(r.Form["bid"][0])
 			if err != nil || bid < 1 {
 				c.Error(w, "行为不存在", "")
 				return
 			}
-			opid, err := strconv.Atoi(r.Form["operate"][0])
-			utils.CheckError(err)
 			remark := "-"
 			if len(r.Form["remark"]) > 0 {
 				remark = r.Form["remark"][0]
 			}
-			models.Behavior.UpdateBehavior(bid, r.Form["bname"][0], opid, []byte(r.Form["paramsList"][0]), remark)
+			bname := r.Form["bname"][0]
+			//检查行为名称是否存在
+			if models.Behavior.IsExistBehavior(bid, bname) {
+				c.Error(w, "行为名已存在，请调整", "")
+				return
+			}
+			models.Behavior.UpdateBehavior(bid, bname, []byte(r.Form["paramsList"][0]), remark)
 			c.Success(w, "行为更新成功", "/behavior/index")
 		} else {
 			c.Error(w, "数据不能为空", "")
@@ -82,4 +90,27 @@ func (c *BehaviorController) Update(r *http.Request, w http.ResponseWriter) {
 		behavior := models.Behavior.GetBehavior(bid)
 		c.View(w, behavior)
 	}
+}
+
+func (c *BehaviorController) Delete(r *http.Request, w http.ResponseWriter) {
+	r.ParseForm()
+	var bid int64
+	bint, _ := strconv.Atoi(r.Form["bid"][0])
+	bid = int64(bint)
+	if bid < 1 {
+		c.Error(w, "参数不正确", "")
+		return
+	}
+	//检查行为是否已被任务使用
+	count := models.Task.GetBehaviorCountInTask(bid)
+	if count > 0 {
+		c.Error(w, "该行为已被任务使用", "")
+	} else {
+		if models.Behavior.DeleteBehavior(bid) {
+			c.Success(w, "删除成功", "")
+		} else {
+			c.Error(w, "删除失败", "")
+		}
+	}
+
 }

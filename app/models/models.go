@@ -9,12 +9,14 @@ var DB flashdb.FlashDB
 var Operate *OperateModel
 var Behavior *BehaviorModel
 var Task *TaskModel
+var Cron *CronModel
 
 func init() {
 	DB = flashdb.SetDbHandler(flashdb.DRMySQL, "root:@/flashCoder")
 	Operate = new(OperateModel)
 	Behavior = new(BehaviorModel)
 	Task = new(TaskModel)
+	Cron = new(CronModel)
 }
 
 func getPageSql(page, pageSize int) string {

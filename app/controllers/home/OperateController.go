@@ -4,7 +4,6 @@ import (
 	"flashCoder/app/kernel/ctr"
 	"flashCoder/app/kernel/html"
 	"flashCoder/app/models"
-	"flashCoder/utils"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -34,10 +33,19 @@ func (c *OperateController) Add(r *http.Request, w http.ResponseWriter) {
 			c.Error(w, "操作名称或者标识不能为空", "")
 			return
 		} else {
-			//检查是否存在标识
-
+			remark := "-"
+			if len(r.Form["remark"]) > 0 {
+				remark = r.Form["remark"][0]
+			}
+			opname := r.Form["opname"][0]
+			optag := r.Form["optag"][0]
+			//检查操作名称是否存在
+			if models.Operate.IsExistOperate(0, optag) {
+				c.Error(w, "操作标识已存在，请调整", "")
+				return
+			}
 			//加入数据
-			models.Operate.AddOperate(r.Form["opname"][0], r.Form["optag"][0], r.Form["remark"][0])
+			models.Operate.AddOperate(opname, optag, remark)
 			c.Success(w, "保存数据成功", "/operate/index")
 			return
 		}
@@ -48,20 +56,25 @@ func (c *OperateController) Add(r *http.Request, w http.ResponseWriter) {
 
 func (c *OperateController) Delete(r *http.Request, w http.ResponseWriter) {
 	r.ParseForm()
-	opid, err := strconv.Atoi(r.Form["opid"][0])
-	utils.CheckError(err)
+	var opid int64
+	oint, _ := strconv.Atoi(r.Form["opid"][0])
+	opid = int64(oint)
 	count := models.Operate.GetOperateCount(opid)
 	if opid < 1 || count < 1 {
 		c.Error(w, "不存在该操作", "")
 		return
 	} else {
-		//删除前检查数据是否被使用
-
-		//删除数据
-
-		models.Operate.DeleteOperate(opid)
-		c.Success(w, "删除数据成功", "")
-		return
+		//检查操作是否已被行为使用
+		count := models.Behavior.GetOperateCountInBehavior(opid)
+		if count > 0 {
+			c.Error(w, "该操作已被行为使用", "")
+		} else {
+			if models.Operate.DeleteOperate(opid) {
+				c.Success(w, "删除成功", "")
+			} else {
+				c.Error(w, "删除失败", "")
+			}
+		}
 	}
 }
 

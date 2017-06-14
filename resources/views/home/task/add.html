@@ -28,7 +28,7 @@
     </div>
   </div>
 </div>
- <div class="form-inline">
+ <div class="form-inline cl-fff">
     <div class="form-group">
       <label for="taskName">任务名称：</label>
       <input type="input" class="form-control" id="taskName" name="taskName" placeholder="请输入任务名称">
@@ -40,6 +40,10 @@
 <script type="text/babel" src="/components/TaskChoosePanel.js"></script>
 <script type="text/babel" src="/components/OrderSelect.js"></script>
 <script type="text/babel" src="/components/ModelDialog.js"></script>
+<script type="text/javascript">
+  var behaviorList = {{.behaviorList}}
+  var basicTaskList = {{.basicTaskList}}
+</script>
 <script type="text/babel">
   $("#accordion").on('shown.bs.collapse',function(){
      if ($("#BasicTask").hasClass("in")){
@@ -49,20 +53,18 @@
      }
   });
   
-  var behaviorList = {{.behaviorList}}
-  var basicTaskList = {{.basicTaskList}}
 	ReactDOM.render(
 	  <TitleWithFunc title="添加任务" handleName="返回列表" handleUrl="#" handleFunc={back.bind(this,-1)}/>,
 	  document.getElementById('navi')
 	);
 
 	ReactDOM.render(
-	  <TaskChoosePanel itemList={behaviorList} saveName="basicTaskBehaviors" itemIdName="Bid" itemDisName="Bname"/>,
+	  <TaskChoosePanel itemList={behaviorList} saveName="basicTaskBehaviors" itemIdName="Bid" itemDisName="Bname" dialogName="basicConfirm"/>,
 	  document.getElementById('BasicTask')
 	);
 
   ReactDOM.render(
-    <TaskChoosePanel itemList={basicTaskList} saveName="compositeTaskBasics" itemIdName="Tid" itemDisName="Tname"/>,
+    <TaskChoosePanel itemList={basicTaskList} saveName="compositeTaskBasics" itemIdName="Tid" itemDisName="Tname" dialogName="compositeConfirm"/>,
     document.getElementById('CompositeTask')
   );
 </script>

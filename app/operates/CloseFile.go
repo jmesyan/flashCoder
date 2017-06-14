@@ -14,5 +14,5 @@ func (b *CloseFile) Execute(params map[string]string, lastRes interface{}) inter
 		fmt.Println("good")
 		last.MethodByName("Close").Call(nil)
 	}
-	return nil
+	return true
 }

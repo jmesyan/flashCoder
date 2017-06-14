@@ -1,7 +1,8 @@
 package main
 
 import (
-	ctr "flashCoder/app/controllers"
+	"flashCoder/app/controllers"
+	"flashCoder/app/kernel/crontab"
 	"flashCoder/utils"
 	// "log"
 	// "fmt"
@@ -11,13 +12,15 @@ import (
 
 func main() {
 	//静态资源
-	ctr.StaticMap = make(map[string]string)
-	ctr.AddstaticMap("/assets", "./resources/assets")
-	ctr.AddstaticMap("/components", "./resources/assets/js/components")
-	ctr.AddstaticMap("/favicon.ico", "./resources/assets/images/flash.ico")
+	controllers.StaticMap = make(map[string]string)
+	controllers.AddstaticMap("/assets", "./resources/assets")
+	controllers.AddstaticMap("/components", "./resources/assets/js/components")
+	controllers.AddstaticMap("/favicon.ico", "./resources/assets/images/flash.ico")
+	//启动事件监听
+	crontab.Watching()
 	//启动服务器
 	var Handler http.Handler
-	Handler = new(ctr.Controller)
+	Handler = new(controllers.Controller)
 	s := &http.Server{
 		Addr:           ":8080",
 		Handler:        Handler,
