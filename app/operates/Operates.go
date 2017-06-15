@@ -22,7 +22,7 @@ func init() {
 			for {
 				select {
 				case msg := <-WinMsg:
-					fmt.Println(msg)
+					fmt.Println("WinMsg")
 					ui.MsgBox(w, "消息提示", string(msg))
 				}
 			}
