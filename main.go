@@ -22,7 +22,7 @@ func main() {
 	var Handler http.Handler
 	Handler = new(controllers.Controller)
 	s := &http.Server{
-		Addr:           ":8080",
+		Addr:           ":6339",
 		Handler:        Handler,
 		ReadTimeout:    100 * time.Second,
 		WriteTimeout:   100 * time.Second,

@@ -3,7 +3,7 @@ package models
 import (
 	"encoding/json"
 	"flashCoder/utils"
-	// "fmt"
+	"fmt"
 	"time"
 )
 
@@ -61,6 +61,7 @@ func (m *TaskModel) GetTaskListCount(tcate int) int {
 func (m *TaskModel) AddBasicTask(name string, berhaviors []TaskItem) bool {
 	tx, err := DB.TransBegin() //使用事务确保mysql数据表类型为Innodb
 	if err != nil {
+		fmt.Println(err)
 		return false
 	}
 	//添加一个任务
@@ -77,6 +78,7 @@ func (m *TaskModel) AddBasicTask(name string, berhaviors []TaskItem) bool {
 	contents[4] = contents[3]
 	tid, err := DB.TransInsert(tx, sql, contents)
 	if err != nil {
+		fmt.Println(err)
 		tx.Rollback()
 		return false
 	}
@@ -91,6 +93,7 @@ func (m *TaskModel) AddBasicTask(name string, berhaviors []TaskItem) bool {
 		contents = []interface{}{bid, tid, border, paramsin}
 		_, err := DB.TransInsert(tx, sql, contents)
 		if err != nil {
+			fmt.Println(err)
 			tx.Rollback()
 			return false
 		}

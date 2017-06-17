@@ -4,17 +4,17 @@ import (
 	"database/sql"
 	"encoding/json"
 	"errors"
-	_ "github.com/go-sql-driver/mysql"
+	_ "github.com/mattn/go-sqlite3"
 	"strings"
 )
 
-type FMyDB struct {
+type FSqliDB struct {
 	connstr   string
 	dbHandler *sql.DB
 }
 
-func (m *FMyDB) Init(connstr string) error {
-	m.dbHandler, err = sql.Open("mysql", connstr)
+func (m *FSqliDB) Init(connstr string) error {
+	m.dbHandler, err = sql.Open("sqlite3", connstr)
 	if err != nil {
 		return err
 	}
@@ -23,11 +23,11 @@ func (m *FMyDB) Init(connstr string) error {
 	return nil
 }
 
-func (m *FMyDB) Close() {
+func (m *FSqliDB) Close() {
 	m.dbHandler.Close()
 }
 
-func (m *FMyDB) Select(sql string, params []interface{}) (string, error) {
+func (m *FSqliDB) Select(sql string, params []interface{}) (string, error) {
 	if strings.Count(sql, "?") != len(params) {
 		return "", errors.New("sql: params nums doesn't match need band")
 	}
@@ -74,7 +74,7 @@ func (m *FMyDB) Select(sql string, params []interface{}) (string, error) {
 	return string(jsonData), nil
 }
 
-func (m *FMyDB) SelectOne(sql string, params []interface{}, res []interface{}) error {
+func (m *FSqliDB) SelectOne(sql string, params []interface{}, res []interface{}) error {
 	if strings.Count(sql, "?") != len(params) {
 		return errors.New("sql: params nums doesn't match need band")
 	}
@@ -86,7 +86,7 @@ func (m *FMyDB) SelectOne(sql string, params []interface{}, res []interface{}) e
 	return stmtOut.QueryRow(params...).Scan(res...)
 }
 
-func (m *FMyDB) Insert(sql string, params []interface{}) (int64, error) {
+func (m *FSqliDB) Insert(sql string, params []interface{}) (int64, error) {
 	stmtIns, err := m.dbHandler.Prepare(sql)
 	if err != nil {
 		return 0, err
@@ -103,7 +103,7 @@ func (m *FMyDB) Insert(sql string, params []interface{}) (int64, error) {
 	return lastId, nil
 }
 
-func (m *FMyDB) Update(sql string, params []interface{}) error {
+func (m *FSqliDB) Update(sql string, params []interface{}) error {
 	stmtIns, err := m.dbHandler.Prepare(sql)
 	if err != nil {
 		return err
@@ -116,12 +116,12 @@ func (m *FMyDB) Update(sql string, params []interface{}) error {
 	return nil
 }
 
-func (m *FMyDB) TransBegin() (*sql.Tx, error) {
+func (m *FSqliDB) TransBegin() (*sql.Tx, error) {
 	tx, err := m.dbHandler.Begin()
 	return tx, err
 }
 
-func (m *FMyDB) TransInsert(tx *sql.Tx, sql string, params []interface{}) (int64, error) {
+func (m *FSqliDB) TransInsert(tx *sql.Tx, sql string, params []interface{}) (int64, error) {
 	stmtIns, err := tx.Prepare(sql)
 	if err != nil {
 		return 0, err
@@ -138,7 +138,7 @@ func (m *FMyDB) TransInsert(tx *sql.Tx, sql string, params []interface{}) (int64
 	return lastId, nil
 }
 
-func (m *FMyDB) TransUpdate(tx *sql.Tx, sql string, params []interface{}) error {
+func (m *FSqliDB) TransUpdate(tx *sql.Tx, sql string, params []interface{}) error {
 	stmtIns, err := tx.Prepare(sql)
 	if err != nil {
 		return err

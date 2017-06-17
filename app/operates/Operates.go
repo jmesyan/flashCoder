@@ -11,6 +11,8 @@ var Operates = map[string]interface{}{
 	"WriteFile": new(WriteFile),
 	"CloseFile": new(CloseFile),
 	"MsgTip":    new(MsgTip),
+	"ParseTmpl": new(ParseTmpl),
+	"FileEdit":  new(FileEdit),
 }
 
 func init() {

@@ -5,6 +5,8 @@ import (
 	"flashCoder/utils"
 )
 
+var err error
+
 type DriverType int
 
 // Enum the Database driver
@@ -31,11 +33,16 @@ type FlashDB interface {
 
 func SetDbHandler(dbType DriverType, connstr string) FlashDB {
 	switch dbType {
-		case DRMySQL:
-			db := new(FMyDB)
-			err := db.Init(connstr)
-			utils.CheckError(err)
-			return db
+	case DRMySQL:
+		db := new(FMyDB)
+		err := db.Init(connstr)
+		utils.CheckError(err)
+		return db
+	case DRSqlite:
+		db := new(FSqliDB)
+		err := db.Init(connstr)
+		utils.CheckError(err)
+		return db
 	}
 	return nil
 }

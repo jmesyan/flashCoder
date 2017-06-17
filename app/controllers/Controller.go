@@ -43,6 +43,8 @@ func (c *Controller) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		c.CacheHandler.Set(cacheKey, 1, 1*time.Second)
 	}
 
+	w.Header().Set("Cache-Control", "no-store, no-cache, must-revalidate")
+
 	if _, ok := Router[mp]; ok {
 		mr := reflect.ValueOf(Router[mp])
 		if mr.Kind() == reflect.Map {
