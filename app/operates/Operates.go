@@ -1,16 +1,27 @@
 package operates
 
 import (
+	"context"
 	"fmt"
 	"github.com/andlabs/ui"
 )
 
+type ParamsType int
+
+const (
+	_ ParamsType = iota
+	ParamsGlobal
+	ParamsCurrent
+	ParamsResolve
+	ParamsCurRes
+)
+
 var WinMsg chan []byte
-var Operates = map[string]interface{}{
-	"OpenFile":  new(OpenFile),
-	"WriteFile": new(WriteFile),
-	"CloseFile": new(CloseFile),
-	"MsgTip":    new(MsgTip),
+var Operates = map[string]OperatesIn{
+	// "OpenFile":  new(OpenFile),
+	// "WriteFile": new(WriteFile),
+	// "CloseFile": new(CloseFile),
+	// "MsgTip":    new(MsgTip),
 	"ParseTmpl": new(ParseTmpl),
 	"FileEdit":  new(FileEdit),
 }
@@ -34,4 +45,21 @@ func init() {
 			panic(err)
 		}
 	}()
+}
+
+type OperatesIn interface {
+	Execute(ctx context.Context) map[string]string
+	setParams(t ParamsType, val map[string]string)
+}
+
+func parseParams(op OperatesIn, ctx context.Context) {
+	if global := ctx.Value(ParamsGlobal).(map[string]string); global != nil {
+		op.setParams(ParamsGlobal, global)
+	}
+
+	if curres := ctx.Value(ParamsCurRes).(map[string]map[string]string); curres != nil {
+		op.setParams(ParamsCurrent, curres["current"])
+		op.setParams(ParamsResolve, curres["resolve"])
+	}
+
 }

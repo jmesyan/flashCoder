@@ -8,8 +8,9 @@ import (
 	"flashCoder/app/operates"
 	// "flashCoder/utils"
 	// "fmt"
+	"context"
 	"net/http"
-	"reflect"
+	// "reflect"
 	"strconv"
 )
 
@@ -94,32 +95,38 @@ func (c *TaskController) TaskExecute(r *http.Request, w http.ResponseWriter) {
 				return
 			}
 			tid = int64(td)
-			task := models.Task.GetTask(tid)
-			if task.Tid > 0 {
-				taskBehavior := models.Task.GetTaskBehavior(task.Tid, task.Tcate)
-				var lastRes interface{}
-				for k, v := range taskBehavior {
+			taskDetail := models.Task.GetTask(tid)
+			if taskDetail.Tid > 0 {
+				taskBehavior := models.Task.GetTaskBehavior(taskDetail.Tid, taskDetail.Tcate)
+				task, _ := context.WithCancel(context.Background())
+				global := context.WithValue(task, operates.ParamsGlobal, map[string]string{})
+				resolve := map[string]string{}
+				for _, v := range taskBehavior {
 					bv := models.Behavior.GetBehavior(v.Bid)
 					optag := models.Operate.GetOperateTagById(bv.Opid)
 					var params []models.OperateParams
 					json.Unmarshal([]byte(v.Paramsin), &params)
-					var paramsList map[string]string
-					paramsList = make(map[string]string)
-					for _, param := range params {
-						paramsList[param.Name] = param.Value
-					}
+					if optag == "ParamsGlobal" {
+						if pa := global.Value(operates.ParamsGlobal).(map[string]string); pa != nil {
+							for _, param := range params {
+								pa[param.Name] = param.Value
+							}
+							global = context.WithValue(task, operates.ParamsGlobal, pa)
 
-					if operate, ok := operates.Operates[optag]; ok {
-						ber := reflect.ValueOf(operate)
-						in := make([]reflect.Value, 2)
-						in[0] = reflect.ValueOf(paramsList)
-						if k == 0 {
-							in[1] = reflect.ValueOf(true)
-						} else {
-							in[1] = reflect.ValueOf(lastRes)
 						}
-						last := ber.MethodByName("Execute").Call(in)
-						lastRes = last[0].Interface()
+					} else {
+						current := make(map[string]string)
+						for _, param := range params {
+							current[param.Name] = param.Value
+						}
+						val := map[string]map[string]string{
+							"current": current,
+							"resolve": resolve,
+						}
+						curres := context.WithValue(global, operates.ParamsCurRes, val)
+						if operate, ok := operates.Operates[optag]; ok {
+							resolve = operate.Execute(curres)
+						}
 					}
 
 				}
