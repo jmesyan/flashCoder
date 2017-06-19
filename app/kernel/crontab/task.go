@@ -8,7 +8,6 @@ import (
 	"flashCoder/app/operates"
 	"fmt"
 	"github.com/robfig/cron"
-	"reflect"
 	"strconv"
 	"strings"
 	"time"
@@ -91,42 +90,6 @@ func (c CronTask) Run() {
 }
 
 func (c CronTask) excute(tid int64) {
-	task := models.Task.GetTask(tid)
-	if task.Tid > 0 {
-		taskBehavior := models.Task.GetTaskBehavior(task.Tid, task.Tcate)
-		var lastRes interface{}
-		for k, v := range taskBehavior {
-			bv := models.Behavior.GetBehavior(v.Bid)
-			optag := models.Operate.GetOperateTagById(bv.Opid)
-			var params []models.OperateParams
-			json.Unmarshal([]byte(v.Paramsin), &params)
-			var paramsList map[string]string
-			paramsList = make(map[string]string)
-			for _, param := range params {
-				paramsList[param.Name] = param.Value
-			}
-
-			if operate, ok := operates.Operates[optag]; ok {
-				ber := reflect.ValueOf(operate)
-				in := make([]reflect.Value, 2)
-				in[0] = reflect.ValueOf(paramsList)
-				if k == 0 {
-					in[1] = reflect.ValueOf(true)
-				} else {
-					in[1] = reflect.ValueOf(lastRes)
-				}
-				last := ber.MethodByName("Execute").Call(in)
-				lastRes = last[0].Interface()
-			}
-
-		}
-		fmt.Println(tid, "执行完成")
-	} else {
-		fmt.Println(tid, "任务不存在")
-	}
-}
-
-func (c CronTask) _excute(tid int64) {
 	taskDetail := models.Task.GetTask(tid)
 	if taskDetail.Tid > 0 {
 		taskBehavior := models.Task.GetTaskBehavior(taskDetail.Tid, taskDetail.Tcate)

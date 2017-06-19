@@ -11,20 +11,7 @@ import (
 )
 
 type FileEdit struct {
-	globalParams  map[string]string
-	currentParams map[string]string
-	resolveParams map[string]string
-}
-
-func (op *FileEdit) setParams(t ParamsType, val map[string]string) {
-	switch t {
-	case ParamsGlobal:
-		op.globalParams = val
-	case ParamsCurrent:
-		op.currentParams = val
-	case ParamsResolve:
-		op.resolveParams = val
-	}
+	OperatesBase
 }
 
 func (op *FileEdit) Execute(ctx context.Context) map[string]string {
@@ -67,7 +54,7 @@ func (op *FileEdit) Execute(ctx context.Context) map[string]string {
 			go func() {
 				ioutil.WriteFile(path, []byte(newContent), 0)
 			}()
-			resolve["result"] = "success"
+			resolve["ret"] = "success"
 			return resolve
 		} else {
 			fmt.Print("failed")

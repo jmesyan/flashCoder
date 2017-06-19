@@ -12,20 +12,7 @@ import (
 )
 
 type ParseTmpl struct {
-	globalParams  map[string]string
-	currentParams map[string]string
-	resolveParams map[string]string
-}
-
-func (op *ParseTmpl) setParams(t ParamsType, val map[string]string) {
-	switch t {
-	case ParamsGlobal:
-		op.globalParams = val
-	case ParamsCurrent:
-		op.currentParams = val
-	case ParamsResolve:
-		op.resolveParams = val
-	}
+	OperatesBase
 }
 
 func (op *ParseTmpl) Execute(ctx context.Context) map[string]string {

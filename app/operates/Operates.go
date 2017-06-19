@@ -21,7 +21,7 @@ var Operates = map[string]OperatesIn{
 	// "OpenFile":  new(OpenFile),
 	// "WriteFile": new(WriteFile),
 	// "CloseFile": new(CloseFile),
-	// "MsgTip":    new(MsgTip),
+	"MsgTip":    new(MsgTip),
 	"ParseTmpl": new(ParseTmpl),
 	"FileEdit":  new(FileEdit),
 }
@@ -62,4 +62,21 @@ func parseParams(op OperatesIn, ctx context.Context) {
 		op.setParams(ParamsResolve, curres["resolve"])
 	}
 
+}
+
+type OperatesBase struct {
+	globalParams  map[string]string
+	currentParams map[string]string
+	resolveParams map[string]string
+}
+
+func (op *OperatesBase) setParams(t ParamsType, val map[string]string) {
+	switch t {
+	case ParamsGlobal:
+		op.globalParams = val
+	case ParamsCurrent:
+		op.currentParams = val
+	case ParamsResolve:
+		op.resolveParams = val
+	}
 }
