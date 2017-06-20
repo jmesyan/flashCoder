@@ -7,7 +7,7 @@
 	var list = {{.list}};
 </script>
 <script type="text/babel">
-	var titles = ["编号", "行为名称", "操作ID", "备注", "更新时间", "操作"];
+	var titles = ["编号", "行为名称", "操作名称", "备注", "更新时间", "操作"];
     var handle = function(row, k){
     	var bid = row.Bid, url = "/behavior/update?bid="+bid;
     	var deleteUrl = "/behavior/delete?bid="+bid;
@@ -21,7 +21,7 @@
     var disrow = [
 		{name:"Bid"},
 		{name:"Bname"},
-		{name:"Opid"},
+		{name:"Opname"},
 		{name:"Remark"},
 		{name:"Updtime",filters:[timeFormat]},
 		{name:false, handle:handle},

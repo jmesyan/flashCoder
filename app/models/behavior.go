@@ -10,7 +10,7 @@ type BehaviorModel struct {
 }
 
 func (m *BehaviorModel) GetBehaviorList(page, pageSize int) []FlashBehavior {
-	sql := "select * from flash_behavior order by addtime desc"
+	sql := "select a.*,b.opname from flash_behavior as a inner join flash_operate as b on a.opid=b.opid order by addtime desc"
 	sql += getPageSql(page, pageSize)
 	condition := make([]interface{}, 0)
 	result, err := DB.Select(sql, condition)
@@ -61,7 +61,7 @@ func (m *BehaviorModel) UpdateBehavior(bid int, bname string, paramsdef []byte, 
 }
 
 func (m *BehaviorModel) GetBehavior(bid int64) FlashBehavior {
-	sql := "select * from flash_behavior where bid = ?"
+	sql := "select a.*,b.opname from flash_behavior as a inner join flash_operate as b on a.opid=b.opid where a.bid = ?"
 	condition := []interface{}{bid}
 	result, err := DB.Select(sql, condition)
 	utils.CheckError(err)

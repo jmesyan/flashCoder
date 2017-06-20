@@ -21,10 +21,18 @@
 			</td>
 		);
     }
+    var ttFormat = function(row, k){
+		if (row.Tcate == 2){
+			return (<td key={k}>复合任务</td>);
+		} else {
+			return (<td key={k}>基础任务</td>);
+		} 
+    }
+
     var disrow = [
 		{name:"Tid"},
 		{name:"Tname"},
-		{name:"Tcate"},
+		{name:false, handle:ttFormat},
 		{name:"Updtime",filters:[timeFormat]},
 		{name:false, handle:handle},
     ];

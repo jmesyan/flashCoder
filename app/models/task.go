@@ -159,9 +159,9 @@ func (m *TaskModel) GetTask(tid int64) FlashTask {
 func (m *TaskModel) GetTaskBehavior(tid int64, tcate uint8) []FlashTaskBehavior {
 	var sql string
 	if tcate == 1 {
-		sql = "select * from flash_task_behavior where tid = ? and ctid = 0 order by border asc"
+		sql = "select a.*,b.bname,c.tname from flash_task_behavior as a inner join flash_behavior as b on a.bid = b.bid inner join flash_task as c on a.tid=c.tid where a.tid = ? and a.ctid = 0 order by a.border asc"
 	} else {
-		sql = "select * from flash_task_behavior where ctid = ? order by torder asc, border asc"
+		sql = "select a.*,b.bname,c.tname,d.tname as ctname from flash_task_behavior as a inner join flash_behavior as b on a.bid = b.bid inner join flash_task as c on a.tid=c.tid inner join flash_task as d on a.ctid = d.tid where a.ctid = ? order by a.torder asc, a.border asc"
 	}
 	var condition []interface{}
 	condition = make([]interface{}, 1)
