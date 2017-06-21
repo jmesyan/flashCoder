@@ -2,7 +2,6 @@ package models
 
 import (
 	"flashCoder/app/kernel/db"
-	// "fmt"
 	// "os"
 	// "os/exec"
 	// "path/filepath"
@@ -16,8 +15,8 @@ var Task *TaskModel
 var Cron *CronModel
 
 func init() {
-	// DB = flashdb.SetDbHandler(flashdb.DRMySQL, "root:@/flashCoder")
-	DB = flashdb.SetDbHandler(flashdb.DRSqlite, "E:/Go/Studio/src/flashCoder/app/databases/flashCoder.db")
+	dbType, connstr := flashdb.DBConnection("default")
+	DB = flashdb.SetDbHandler(dbType, connstr)
 	Operate = new(OperateModel)
 	Behavior = new(BehaviorModel)
 	Task = new(TaskModel)
