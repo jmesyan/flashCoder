@@ -2,7 +2,8 @@ package controllers
 
 import (
 	"flashCoder/app/kernel/cache"
-	// "fmt"
+	"flashCoder/utils"
+	"github.com/go-ini/ini"
 	"net/http"
 	"reflect"
 	"regexp"
@@ -10,17 +11,20 @@ import (
 	"time"
 )
 
-var StaticMap map[string]string
-
 type Controller struct {
 	CacheHandler *cache.Cache
 }
 
 func (c *Controller) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	config, err := ini.Load(utils.GetRootDirectory() + "/.env")
+	utils.CheckError(err)
+	staticDir, err := config.GetSection("staticDir")
+	utils.CheckError(err)
 	sli := strings.Split(r.URL.Path, "/")
 	prefix := "/" + sli[1]
-	if localdir, ok := StaticMap[prefix]; ok != false {
-		file := localdir + r.URL.Path[len(prefix):]
+	if staticDir.HasKey(prefix) {
+		localDir := staticDir.Key(prefix).String()
+		file := localDir + r.URL.Path[len(prefix):]
 		http.ServeFile(w, r, file)
 		return
 	}
@@ -105,8 +109,4 @@ func (c *Controller) setCacheHandler(defaultExpiration, cleanupInterval time.Dur
 
 func (c *Controller) getRequestCacheKey(mp, cp, fn string) string {
 	return "Request:" + mp + "/" + cp + "/" + fn
-}
-
-func AddstaticMap(webdir, localdir string) {
-	StaticMap[webdir] = localdir
 }

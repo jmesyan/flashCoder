@@ -9,8 +9,10 @@ import (
 func TestIni(t *testing.T) {
 	cfg, err := ini.Load("./../.env")
 	fmt.Println(cfg, err)
-	mysqld, err := cfg.GetSection("mysqld")
+	mysqld, err := cfg.GetSection("staticDir")
 	fmt.Println(mysqld, err)
-	host, err := mysqld.GetKey("host")
+	yes := mysqld.HasKey("/assets")
+	fmt.Println(yes)
+	host, err := mysqld.GetKey("/assets")
 	fmt.Println(host, err)
 }
