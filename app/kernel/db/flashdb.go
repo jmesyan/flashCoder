@@ -3,7 +3,6 @@ package flashdb
 import (
 	"database/sql"
 	"flashCoder/utils"
-	"github.com/go-ini/ini"
 )
 
 var err error
@@ -49,9 +48,7 @@ func SetDbHandler(dbType DriverType, connstr string) FlashDB {
 }
 
 func DBConnection(t string) (DriverType, string) {
-	rootPath := utils.GetRootDirectory()
-	config, err := ini.Load(rootPath + "/.env")
-	utils.CheckError(err)
+	config := utils.GetGlobalCfg()
 	dbType, dbconnstr := DRSqlite, ""
 	dbconnect := config.Section("dbconnection").Key(t).String()
 	switch dbconnect {

@@ -34,7 +34,7 @@ func Substr(s string, pos, length int) string {
 
 func GetGlobalCfg() *ini.File {
 	rootPath := GetRootDirectory()
-	config, err := ini.Load(rootPath + "/../.env")
+	config, err := ini.Load(rootPath + "/.env")
 	CheckError(err)
 	return config
 }
