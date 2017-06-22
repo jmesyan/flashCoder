@@ -13,7 +13,7 @@ func (m *CronModel) GetCron(crid int64) FlashCron {
 	sql := "select * from flash_cron where crid = ?"
 	condition := []interface{}{crid}
 	result, err := DB.Select(sql, condition)
-	utils.CheckError(err)
+	utils.LogError("error", err)
 	var res []FlashCron
 	json.Unmarshal([]byte(result), &res)
 	if len(res) > 0 {
@@ -38,7 +38,7 @@ func (m *CronModel) GetValidList() []FlashCron {
 	sql := "select * from flash_cron where state = 0 order by crid desc"
 	condition := make([]interface{}, 0)
 	result, err := DB.Select(sql, condition)
-	utils.CheckError(err)
+	utils.LogError("error", err)
 	var res []FlashCron
 	json.Unmarshal([]byte(result), &res)
 	return res
@@ -49,7 +49,7 @@ func (m *CronModel) GetCronList(page, pageSize int) []FlashCron {
 	sql += getPageSql(page, pageSize)
 	condition := make([]interface{}, 0)
 	result, err := DB.Select(sql, condition)
-	utils.CheckError(err)
+	utils.LogError("error", err)
 	var res []FlashCron
 	json.Unmarshal([]byte(result), &res)
 	return res
@@ -73,7 +73,7 @@ func (m *CronModel) AddCron(tid int64, second, minute, hour, day, month, week st
 	addtime := time.Now().Unix()
 	contents := []interface{}{second, minute, hour, day, month, week, tid, addtime}
 	lastid, err := DB.Insert(sql, contents)
-	utils.CheckError(err)
+	utils.LogError("error", err)
 	return lastid
 }
 

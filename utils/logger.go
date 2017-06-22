@@ -104,7 +104,7 @@ func LogError(level string, err error) {
 		Loger.SetLogConfig()
 		path := Loger.FilePath + "/" + Loger.FileName
 		logFile, err := os.OpenFile(path, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
-		CheckError(err)
+		Loger.Fatal(err)
 		Loger.Handler = log.New(logFile, "[Info]", log.LstdFlags|log.Llongfile)
 	}
 

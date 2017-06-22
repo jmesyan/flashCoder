@@ -14,7 +14,7 @@ func (b *OpenFile) Execute(params map[string]string, lastRes interface{}) interf
 
 	if path, ok := params["path"]; ok {
 		fd, err := os.OpenFile(path, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
-		utils.CheckError(err)
+		utils.LogError("error", err)
 		return fd
 	} else {
 		return false

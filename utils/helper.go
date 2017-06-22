@@ -4,14 +4,7 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"github.com/go-ini/ini"
-	"log"
 )
-
-func CheckError(err error) {
-	if err != nil {
-		log.Fatal(err)
-	}
-}
 
 // 生成32位MD5
 func MD5(text string) string {
@@ -35,6 +28,6 @@ func Substr(s string, pos, length int) string {
 func GetGlobalCfg() *ini.File {
 	rootPath := GetRootDirectory()
 	config, err := ini.Load(rootPath + "/.env")
-	CheckError(err)
+	LogError("fatal", err)
 	return config
 }

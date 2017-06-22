@@ -36,12 +36,12 @@ func SetDbHandler(dbType DriverType, connstr string) FlashDB {
 	case DRMySQL:
 		db := new(FMyDB)
 		err := db.Init(connstr)
-		utils.CheckError(err)
+		utils.LogError("panic", err)
 		return db
 	case DRSqlite:
 		db := new(FSqliDB)
 		err := db.Init(connstr)
-		utils.CheckError(err)
+		utils.LogError("panic", err)
 		return db
 	}
 	return nil

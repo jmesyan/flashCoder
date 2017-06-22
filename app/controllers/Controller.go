@@ -3,7 +3,6 @@ package controllers
 import (
 	"flashCoder/app/kernel/cache"
 	"flashCoder/utils"
-	"github.com/go-ini/ini"
 	"net/http"
 	"reflect"
 	"regexp"
@@ -16,10 +15,9 @@ type Controller struct {
 }
 
 func (c *Controller) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	config, err := ini.Load(utils.GetRootDirectory() + "/.env")
-	utils.CheckError(err)
+	config := utils.GetGlobalCfg()
 	staticDir, err := config.GetSection("staticDir")
-	utils.CheckError(err)
+	utils.LogError("fatal", err)
 	sli := strings.Split(r.URL.Path, "/")
 	prefix := "/" + sli[1]
 	if staticDir.HasKey(prefix) {
