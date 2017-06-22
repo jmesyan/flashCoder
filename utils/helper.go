@@ -3,10 +3,8 @@ package utils
 import (
 	"crypto/md5"
 	"encoding/hex"
+	"github.com/go-ini/ini"
 	"log"
-	// "os"
-	// "math/rand"
-	// "time"
 )
 
 func CheckError(err error) {
@@ -30,4 +28,13 @@ func Substr(s string, pos, length int) string {
 		l = len(runes)
 	}
 	return string(runes[pos:l])
+}
+
+//获取配置信息
+
+func GetGlobalCfg() *ini.File {
+	rootPath := GetRootDirectory()
+	config, err := ini.Load(rootPath + "/.env")
+	CheckError(err)
+	return config
 }

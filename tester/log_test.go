@@ -2,6 +2,7 @@ package tester
 
 import (
 	// "fmt"
+	"flashCoder/utils"
 	"log"
 	"os"
 	"testing"
@@ -18,4 +19,5 @@ func TestLog(t *testing.T) {
 	debugLog.Println("A Info message here")
 	debugLog.SetPrefix("[Debug]")
 	debugLog.Println("A Debug Message here ")
+	utils.Loger.Debug("hello world")
 }

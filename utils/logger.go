@@ -1,9 +1,13 @@
 package utils
 
 import (
-	"fmt"
 	"log"
+	"os"
+	"strings"
+	"time"
 )
+
+type LogLevel uint
 
 const (
 	PanicLevel LogLevel = iota
@@ -21,6 +25,7 @@ type LogHandler struct {
 }
 
 func (l *LogHandler) GetRecordLevel(level string) LogLevel {
+	level = strings.ToLower(level)
 	switch level {
 	case "debug":
 		return DebugLevel
@@ -70,4 +75,32 @@ func (l *LogHandler) Panic(args ...interface{}) {
 		l.Handler.SetPrefix("[Panic]")
 		l.Handler.Panicln(args...)
 	}
+}
+
+func (l *LogHandler) GetLogName() string {
+	month := time.Now().Format("2016-01")
+	return month + ".log"
+}
+
+func (l *LogHandler) SetLogConfig() {
+	config := GetGlobalCfg()
+	lc := config.Section("logger")
+	level, err := lc.Key("level").Uint()
+	CheckError(err)
+	l.RecordLevel = LogLevel(level)
+	l.FilePath = lc.Key("path").String()
+	l.FileName = l.GetLogName()
+}
+
+var Loger *LogHandler
+
+func init() {
+	Loger = new(LogHandler)
+	Loger.SetLogConfig()
+	path := Loger.FilePath + "/" + Loger.FileName
+	logFile, err := os.OpenFile(path, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
+	defer logFile.Close()
+	CheckError(err)
+	Loger.Handler = log.New(logFile, "[Info]", log.Ldate|log.Llongfile)
+
 }
