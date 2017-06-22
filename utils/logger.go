@@ -78,16 +78,14 @@ func (l *LogHandler) Panic(args ...interface{}) {
 }
 
 func (l *LogHandler) GetLogName() string {
-	month := time.Now().Format("2016-01")
+	month := time.Now().Format("200601")
 	return month + ".log"
 }
 
 func (l *LogHandler) SetLogConfig() {
 	config := GetGlobalCfg()
 	lc := config.Section("logger")
-	level, err := lc.Key("level").Uint()
-	CheckError(err)
-	l.RecordLevel = LogLevel(level)
+	l.RecordLevel = l.GetRecordLevel(lc.Key("level").String())
 	l.FilePath = lc.Key("path").String()
 	l.FileName = l.GetLogName()
 }
@@ -99,8 +97,7 @@ func init() {
 	Loger.SetLogConfig()
 	path := Loger.FilePath + "/" + Loger.FileName
 	logFile, err := os.OpenFile(path, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
-	defer logFile.Close()
 	CheckError(err)
-	Loger.Handler = log.New(logFile, "[Info]", log.Ldate|log.Llongfile)
+	Loger.Handler = log.New(logFile, "[Info]", log.LstdFlags|log.Llongfile)
 
 }
