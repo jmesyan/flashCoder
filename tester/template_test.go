@@ -6,7 +6,7 @@ import (
 	// "io"
 	// "os"
 	// "reflect"
-	"flashCoder/app/kernel/file"
+	"flashCoder/supplier/file"
 	"testing"
 	text "text/template"
 )

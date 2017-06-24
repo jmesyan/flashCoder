@@ -1,9 +1,9 @@
 package home
 
 import (
-	"flashCoder/app/kernel/ctr"
-	"flashCoder/app/kernel/html"
 	"flashCoder/app/models"
+	"flashCoder/supplier/ctr"
+	"flashCoder/supplier/html"
 	"net/http"
 )
 

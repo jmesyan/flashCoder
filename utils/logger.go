@@ -1,7 +1,7 @@
 package utils
 
 import (
-	"flashCoder/app/kernel/log"
+	"flashCoder/supplier/log"
 	"os"
 	"strings"
 	"time"

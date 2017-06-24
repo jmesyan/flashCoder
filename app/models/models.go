@@ -1,7 +1,7 @@
 package models
 
 import (
-	"flashCoder/app/kernel/db"
+	"flashCoder/supplier/db"
 	// "os"
 	// "os/exec"
 	// "path/filepath"

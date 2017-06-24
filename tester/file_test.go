@@ -4,7 +4,7 @@ import (
 	// "bufio"
 	// "fmt"
 	// "io"
-	"flashCoder/app/kernel/file"
+	"flashCoder/supplier/file"
 	"io/ioutil"
 	// "os"
 	// "strconv"

@@ -6,7 +6,7 @@ import (
 	// _ "github.com/mattn/go-sqlite3"
 	"log"
 	// "os"
-	"flashCoder/app/kernel/db"
+	"flashCoder/supplier/db"
 	"testing"
 )
 

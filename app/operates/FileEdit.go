@@ -1,7 +1,7 @@
 package operates
 
 import (
-	"flashCoder/app/kernel/file"
+	"flashCoder/supplier/file"
 	"fmt"
 	"io/ioutil"
 	// "reflect"
