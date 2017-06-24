@@ -1,0 +1,17 @@
+{
+  "name": "flashcoder",
+  "version": "1.0.0",
+  "description": "flashcoder client",
+  "main": "./src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "jmesyan",
+  "license": "ISC",
+  "devDependencies": {
+    "css-loader": "^0.28.4",
+    "file-loader": "^0.11.2",
+    "style-loader": "^0.18.2",
+    "webpack": "^3.0.0"
+  }
+}
