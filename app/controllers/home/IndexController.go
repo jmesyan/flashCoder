@@ -4,6 +4,9 @@ import (
 	"flashCoder/app/models"
 	"flashCoder/supplier/ctr"
 	"flashCoder/supplier/html"
+	"flashCoder/utils"
+	"fmt"
+	"html/template"
 	"net/http"
 )
 
@@ -22,4 +25,17 @@ func (c *IndexController) Index(r *http.Request, w http.ResponseWriter) {
 		"page": pages.Show(),
 	}
 	c.View(w, data)
+}
+
+func (c *IndexController) Client(r *http.Request, w http.ResponseWriter) {
+	tplView := "client/dist/index.html"
+	tplName := "index.html"
+	t := template.New(tplName)
+	t, err := t.ParseFiles(tplView)
+	if err != nil {
+		fmt.Fprintf(w, "parse template error: %s", err.Error())
+		return
+	}
+	err = t.Execute(w, nil)
+	utils.CheckError("error", err)
 }

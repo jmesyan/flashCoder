@@ -65,11 +65,9 @@ func (c *BaseController) View(w http.ResponseWriter, data interface{}) {
 			return
 		}
 		err = t.Execute(w, data)
-		if err != nil {
-			fmt.Fprint(w, err.Error())
-		}
+		utils.CheckError("error", err)
 	} else {
-		fmt.Fprint(w, "template is empty")
+		utils.CheckError("info", "template is empty")
 	}
 	return
 }
