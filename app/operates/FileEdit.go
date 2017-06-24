@@ -1,11 +1,10 @@
 package operates
 
 import (
-	"flashCoder/supplier/file"
-	"fmt"
-	"io/ioutil"
-	// "reflect"
 	"context"
+	"flashCoder/supplier/file"
+	"flashCoder/utils"
+	"io/ioutil"
 	"strconv"
 	"strings"
 )
@@ -21,45 +20,61 @@ func (op *FileEdit) Execute(ctx context.Context) map[string]interface{} {
 	default:
 		parseParams(op, ctx)
 		resolve := make(map[string]interface{})
-		if _, ok := op.currentParams["params"]; !ok {
+
+		if _, ok := op.currentParams["type"]; !ok {
+			utils.CheckError("error", "没有指定文件编辑类型")
 			return nil
 		}
-		origin := op.currentParams["params"]
-		data := make(map[string]string)
-		tmp := strings.Split(origin, ";")
-		for _, v := range tmp {
-			tmp2 := strings.Split(v, "=")
-			data[tmp2[0]] = tmp2[1]
-		}
 
-		path := op.globalParams["path"]
-		funcName := data["funcName"]
-		offset, _ := strconv.Atoi(data["offset"])
-		isBegin := false
-		if strings.Trim(data["isBegin"], " ") == "1" {
-			isBegin = true
-		}
+		editType := op.currentParams["type"]
 
-		dat, err := ioutil.ReadFile(path)
-		if err != nil {
-			fmt.Print(err)
-			return nil
-		}
-		tmpFile := strings.Split(string(dat), "\n")
-		content := op.resolveParams["content"].(string)
-		fh := new(file.FlashFile)
-		res := fh.AddFuncContent(tmpFile, funcName, content, isBegin, offset)
-		if res != nil {
-			newContent := strings.Join(res, "\n")
-			go func() {
-				ioutil.WriteFile(path, []byte(newContent), 0)
-			}()
-			resolve["ret"] = "success"
+		switch editType {
+		case "AddFuncContent":
+			ret := op.addFuncContent()
+			resolve["ret"] = ret
 			return resolve
-		} else {
-			fmt.Print("failed")
-			return nil
 		}
+		resolve["ret"] = false
+		return resolve
 	}
 
+}
+
+//在函数中添加代码
+func (op *FileEdit) addFuncContent() bool {
+	path := op.globalParams["path"]
+	funcName := op.currentParams["funcName"]
+	offset, err := strconv.Atoi(op.currentParams["offset"])
+	utils.CheckError("error", err)
+	isBegin := false
+	if strings.TrimSpace(op.currentParams["isBegin"]) == "1" {
+		isBegin = true
+	}
+
+	dat, err := ioutil.ReadFile(path)
+	if err != nil {
+		utils.CheckError("error", err)
+		return false
+	}
+	tmpFile := strings.Split(string(dat), "\n")
+	var content string
+	if _, ok := op.resolveParams["content"]; ok {
+		content = op.resolveParams["content"].(string)
+	} else {
+		content = op.globalParams["content"]
+	}
+
+	fh := new(file.FlashFile)
+	res := fh.AddFuncContent(tmpFile, funcName, content, isBegin, offset)
+	if res != nil {
+		newContent := strings.Join(res, "\n")
+		go func() {
+			ioutil.WriteFile(path, []byte(newContent), 0)
+		}()
+		utils.CheckError("info", "添加内容到文件成功")
+		return true
+	} else {
+		utils.CheckError("info", "添加内容到文件失败")
+		return false
+	}
 }

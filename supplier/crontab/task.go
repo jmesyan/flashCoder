@@ -4,6 +4,7 @@ import (
 	"errors"
 	"flashCoder/app/jobs"
 	"flashCoder/app/models"
+	"flashCoder/utils"
 	"fmt"
 	"github.com/robfig/cron"
 	"strconv"
@@ -69,8 +70,8 @@ func Reload() {
 	for _, v := range tasks {
 		if Check(v) {
 			sep := " "
-			crontab := v.Second + sep + v.Minute + sep + v.Hour + sep + v.Day + sep + v.Month + sep + v.Week
-			fmt.Println(crontab)
+			crontab := strings.Join([]string{v.Second, v.Minute, v.Hour, v.Day, v.Month, v.Week}, sep)
+			utils.CheckError("debug", crontab)
 			task := CronTask{TaskId: v.Tid, Crontab: crontab}
 			Handler.AddJob(task.Crontab, task)
 		}
@@ -91,8 +92,8 @@ func (c CronTask) excute(tid int64) {
 	taskDetail := models.Task.GetTask(tid)
 	if taskDetail.Tid > 0 {
 		jobs.TaskExecute(taskDetail)
-		fmt.Println(tid, "执行完成")
+		utils.CheckError("info", fmt.Sprintf("定时任务%d执行完成", tid))
 	} else {
-		fmt.Println(tid, "任务不存在")
+		utils.CheckError("error", fmt.Sprintf("定时任务%d不存在", tid))
 	}
 }
