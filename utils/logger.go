@@ -2,7 +2,9 @@ package utils
 
 import (
 	"flashCoder/supplier/log"
+	"fmt"
 	"os"
+	"reflect"
 	"strings"
 	"time"
 )
@@ -94,18 +96,36 @@ func (l *LogHandler) SetLogConfig() {
 
 var Loger *LogHandler
 
-func LogError(level string, err error) {
-	if err == nil {
-		return
-	}
-
+func CheckError(level string, err interface{}) {
 	if Loger == nil {
 		Loger = new(LogHandler)
 		Loger.SetLogConfig()
-		path := Loger.FilePath + "/" + Loger.FileName
-		logFile, err := os.OpenFile(path, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
-		Loger.Fatal(err)
+		path := GetRootDirectory() + "/" + Loger.FilePath + "/" + Loger.FileName
+		logFile, oe := os.OpenFile(path, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
+		if oe != nil {
+			fmt.Println(oe)
+			os.Exit(1)
+		}
 		Loger.Handler = log.New(logFile, "[Info]", log.LstdFlags|log.Llongfile)
+	}
+
+	defer func() {
+		if ce := recover(); ce != nil {
+			Loger.Fatal(ce)
+		}
+	}()
+
+	errType := reflect.ValueOf(err).Kind()
+	if errType != reflect.Ptr && errType != reflect.String {
+		return
+	}
+
+	if errType == reflect.Ptr && err == nil {
+		return
+	}
+
+	if errType == reflect.String && err == "" {
+		return
 	}
 
 	loglevel := Loger.GetLogLevel(level)

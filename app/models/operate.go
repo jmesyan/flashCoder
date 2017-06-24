@@ -20,7 +20,7 @@ func (m *OperateModel) GetOperateList(page, pageSize int) []FlashOperate {
 	sql += getPageSql(page, pageSize)
 	condition := make([]interface{}, 0)
 	result, err := DB.Select(sql, condition)
-	utils.LogError("error", err)
+	utils.CheckError("error", err)
 	var res []FlashOperate
 	json.Unmarshal([]byte(result), &res)
 	return res
@@ -82,7 +82,7 @@ func (m *OperateModel) AddOperate(opname, optag, remark string) int64 {
 	data[2] = remark
 	data[3] = time.Now().Unix()
 	lastid, err := DB.Insert(sql, data)
-	utils.LogError("error", err)
+	utils.CheckError("error", err)
 	return lastid
 }
 

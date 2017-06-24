@@ -31,7 +31,7 @@ func (c *BehaviorController) Add(r *http.Request, w http.ResponseWriter) {
 		r.ParseForm()
 		if len(r.Form["bname"]) > 0 && len(r.Form["operate"]) > 0 && len(r.Form["paramsList"]) > 0 {
 			opid, err := strconv.Atoi(r.Form["operate"][0])
-			utils.LogError("error", err)
+			utils.CheckError("error", err)
 			remark := "-"
 			if len(r.Form["remark"]) > 0 {
 				remark = r.Form["remark"][0]

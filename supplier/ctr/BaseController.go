@@ -109,7 +109,7 @@ func (c *BaseController) dispatchJump(w http.ResponseWriter, message string, sta
 		return
 	}
 	err = t.Execute(w, data)
-	utils.LogError("error", err)
+	utils.CheckError("error", err)
 	return
 }
 

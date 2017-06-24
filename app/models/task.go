@@ -30,7 +30,7 @@ func (m *TaskModel) GetTaskList(tcate, page, pageSize int) []FlashTask {
 		condition = make([]interface{}, 0)
 	}
 	result, err := DB.Select(sql, condition)
-	utils.LogError("error", err)
+	utils.CheckError("error", err)
 	var res []FlashTask
 	json.Unmarshal([]byte(result), &res)
 	return res
@@ -150,7 +150,7 @@ func (m *TaskModel) GetTask(tid int64) FlashTask {
 	sql := "select * from flash_task where tid = ?"
 	condition := []interface{}{tid}
 	result, err := DB.Select(sql, condition)
-	utils.LogError("error", err)
+	utils.CheckError("error", err)
 	var res []FlashTask
 	json.Unmarshal([]byte(result), &res)
 	return res[0]
@@ -167,7 +167,7 @@ func (m *TaskModel) GetTaskBehavior(tid int64, tcate uint8) []FlashTaskBehavior 
 	condition = make([]interface{}, 1)
 	condition[0] = tid
 	result, err := DB.Select(sql, condition)
-	utils.LogError("error", err)
+	utils.CheckError("error", err)
 	var res []FlashTaskBehavior
 	json.Unmarshal([]byte(result), &res)
 	return res
@@ -179,7 +179,7 @@ func (m *TaskModel) GetTaskBehaviorById(tbid int64) FlashTaskBehavior {
 	condition = make([]interface{}, 1)
 	condition[0] = tbid
 	result, err := DB.Select(sql, condition)
-	utils.LogError("error", err)
+	utils.CheckError("error", err)
 	var res []FlashTaskBehavior
 	json.Unmarshal([]byte(result), &res)
 	return res[0]

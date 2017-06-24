@@ -14,7 +14,7 @@ func (m *BehaviorModel) GetBehaviorList(page, pageSize int) []FlashBehavior {
 	sql += getPageSql(page, pageSize)
 	condition := make([]interface{}, 0)
 	result, err := DB.Select(sql, condition)
-	utils.LogError("error", err)
+	utils.CheckError("error", err)
 	var res []FlashBehavior
 	json.Unmarshal([]byte(result), &res)
 	return res
@@ -43,7 +43,7 @@ func (m *BehaviorModel) AddBehavior(bname string, opid int, paramsdef []byte, re
 	data[4] = time.Now().Unix()
 	data[5] = data[4]
 	lastid, err := DB.Insert(sql, data)
-	utils.LogError("error", err)
+	utils.CheckError("error", err)
 	return lastid
 }
 
@@ -64,7 +64,7 @@ func (m *BehaviorModel) GetBehavior(bid int64) FlashBehavior {
 	sql := "select a.*,b.opname from flash_behavior as a inner join flash_operate as b on a.opid=b.opid where a.bid = ?"
 	condition := []interface{}{bid}
 	result, err := DB.Select(sql, condition)
-	utils.LogError("error", err)
+	utils.CheckError("error", err)
 	var res []FlashBehavior
 	json.Unmarshal([]byte(result), &res)
 	if len(res) > 0 {

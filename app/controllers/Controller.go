@@ -17,7 +17,7 @@ type Controller struct {
 func (c *Controller) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	config := utils.GetGlobalCfg()
 	staticDir, err := config.GetSection("staticDir")
-	utils.LogError("fatal", err)
+	utils.CheckError("fatal", err)
 	sli := strings.Split(r.URL.Path, "/")
 	prefix := "/" + sli[1]
 	if staticDir.HasKey(prefix) {

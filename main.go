@@ -14,7 +14,7 @@ func main() {
 	//获取server配置
 	config := utils.GetGlobalCfg()
 	servercf, err := config.GetSection("server")
-	utils.LogError("fatal", err)
+	utils.CheckError("fatal", err)
 	serverPort := "6339"
 	if servercf.HasKey("port") {
 		serverPort = servercf.Key("port").String()
@@ -30,5 +30,5 @@ func main() {
 		MaxHeaderBytes: 1 << 20,
 	}
 	err = s.ListenAndServe()
-	utils.LogError("fatal", err)
+	utils.CheckError("fatal", err)
 }
