@@ -14,13 +14,13 @@ type FileEdit struct {
 	OperatesBase
 }
 
-func (op *FileEdit) Execute(ctx context.Context) map[string]string {
+func (op *FileEdit) Execute(ctx context.Context) map[string]interface{} {
 	select {
 	case <-ctx.Done():
 		return nil
 	default:
 		parseParams(op, ctx)
-		resolve := make(map[string]string)
+		resolve := make(map[string]interface{})
 		if _, ok := op.currentParams["params"]; !ok {
 			return nil
 		}
@@ -46,7 +46,7 @@ func (op *FileEdit) Execute(ctx context.Context) map[string]string {
 			return nil
 		}
 		tmpFile := strings.Split(string(dat), "\n")
-		content := op.resolveParams["content"]
+		content := op.resolveParams["content"].(string)
 		fh := new(file.FlashFile)
 		res := fh.AddFuncContent(tmpFile, funcName, content, isBegin, offset)
 		if res != nil {

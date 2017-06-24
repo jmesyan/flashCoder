@@ -2,7 +2,7 @@ package operates
 
 import (
 	"context"
-	"fmt"
+	"flashCoder/utils"
 	"github.com/andlabs/ui"
 )
 
@@ -18,9 +18,6 @@ const (
 
 var WinMsg chan []byte
 var Operates = map[string]OperatesIn{
-	// "OpenFile":  new(OpenFile),
-	// "WriteFile": new(WriteFile),
-	// "CloseFile": new(CloseFile),
 	"MsgTip":    new(MsgTip),
 	"ParseTmpl": new(ParseTmpl),
 	"FileEdit":  new(FileEdit),
@@ -35,7 +32,7 @@ func init() {
 			for {
 				select {
 				case msg := <-WinMsg:
-					fmt.Println("WinMsg")
+					utils.CheckError("info", "WinMsg:"+string(msg))
 					ui.MsgBox(w, "消息提示", string(msg))
 				}
 			}
@@ -48,16 +45,16 @@ func init() {
 }
 
 type OperatesIn interface {
-	Execute(ctx context.Context) map[string]string
-	setParams(t ParamsType, val map[string]string)
+	Execute(ctx context.Context) map[string]interface{}
+	setParams(t ParamsType, val interface{})
 }
 
 func parseParams(op OperatesIn, ctx context.Context) {
-	if global := ctx.Value(ParamsGlobal).(map[string]string); global != nil {
+	if global := ctx.Value(ParamsGlobal); global != nil {
 		op.setParams(ParamsGlobal, global)
 	}
 
-	if curres := ctx.Value(ParamsCurRes).(map[string]map[string]string); curres != nil {
+	if curres := ctx.Value(ParamsCurRes).(map[string]interface{}); curres != nil {
 		op.setParams(ParamsCurrent, curres["current"])
 		op.setParams(ParamsResolve, curres["resolve"])
 	}
@@ -67,16 +64,16 @@ func parseParams(op OperatesIn, ctx context.Context) {
 type OperatesBase struct {
 	globalParams  map[string]string
 	currentParams map[string]string
-	resolveParams map[string]string
+	resolveParams map[string]interface{}
 }
 
-func (op *OperatesBase) setParams(t ParamsType, val map[string]string) {
+func (op *OperatesBase) setParams(t ParamsType, val interface{}) {
 	switch t {
 	case ParamsGlobal:
-		op.globalParams = val
+		op.globalParams = val.(map[string]string)
 	case ParamsCurrent:
-		op.currentParams = val
+		op.currentParams = val.(map[string]string)
 	case ParamsResolve:
-		op.resolveParams = val
+		op.resolveParams = val.(map[string]interface{})
 	}
 }

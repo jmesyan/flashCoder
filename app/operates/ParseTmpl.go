@@ -15,13 +15,13 @@ type ParseTmpl struct {
 	OperatesBase
 }
 
-func (op *ParseTmpl) Execute(ctx context.Context) map[string]string {
+func (op *ParseTmpl) Execute(ctx context.Context) map[string]interface{} {
 	select {
 	case <-ctx.Done():
 		return nil
 	default:
 		parseParams(op, ctx)
-		resolve := make(map[string]string)
+		resolve := make(map[string]interface{})
 		itemplate, ok1 := op.currentParams["itemplate"]
 		orgin, ok2 := op.currentParams["params"]
 		if !ok1 || !ok2 {
