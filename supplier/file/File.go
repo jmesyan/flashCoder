@@ -1,15 +1,15 @@
 package file
 
 import (
+	"flashCoder/utils"
 	"fmt"
 	"regexp"
 	"sort"
 	"strings"
 )
 
-const PHPFUNCRULE = "function\\s+[a-zA-Z_]+\\s*\\("
-
 type FlashFile struct {
+	FileType string
 }
 
 func (f *FlashFile) DeleteLines(contents []string, lines []int) []string {
@@ -157,7 +157,8 @@ func (f *FlashFile) FindFuncLine(contents []string, funcName string, funcRule st
 }
 
 func (f *FlashFile) AddFuncContent(contents []string, funcName string, content string, isBegin bool, offset int) []string {
-	lineBegin, lineEnd := f.FindFuncLine(contents, funcName, PHPFUNCRULE)
+	funcRule := f.getFuncRule()
+	lineBegin, lineEnd := f.FindFuncLine(contents, funcName, funcRule)
 	if lineBegin > 0 && lineEnd > 0 {
 		if isBegin {
 			return f.AddLines(contents, lineBegin+offset, content, false, true)
@@ -166,4 +167,14 @@ func (f *FlashFile) AddFuncContent(contents []string, funcName string, content s
 		}
 	}
 	return nil
+}
+
+func (f *FlashFile) getFuncRule() string {
+	fileType := strings.ToLower(f.FileType)
+	switch fileType {
+	case ".php":
+		return "function\\s+[a-zA-Z_]+\\s*\\("
+	}
+	utils.CheckError("err", "no explicit file type")
+	return ""
 }

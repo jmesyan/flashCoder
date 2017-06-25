@@ -5,6 +5,7 @@ import (
 	"flashCoder/supplier/file"
 	"flashCoder/utils"
 	"io/ioutil"
+	"path/filepath"
 	"strconv"
 	"strings"
 )
@@ -63,8 +64,7 @@ func (op *FileEdit) addFuncContent() bool {
 	} else {
 		content = op.globalParams["content"]
 	}
-
-	fh := new(file.FlashFile)
+	fh := &file.FlashFile{filepath.Ext(path)}
 	res := fh.AddFuncContent(tmpFile, funcName, content, isBegin, offset)
 	if res != nil {
 		newContent := strings.Join(res, "\n")
@@ -74,7 +74,7 @@ func (op *FileEdit) addFuncContent() bool {
 		utils.CheckError("info", "添加内容到文件成功")
 		return true
 	} else {
-		utils.CheckError("info", "添加内容到文件失败")
+		utils.CheckError("error", "添加内容到文件失败")
 		return false
 	}
 }
