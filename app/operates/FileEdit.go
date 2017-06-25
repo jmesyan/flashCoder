@@ -31,7 +31,15 @@ func (op *FileEdit) Execute(ctx context.Context) map[string]interface{} {
 
 		switch editType {
 		case "AddFuncContent":
-			ret := op.addFuncContent()
+			ret := op.addContent("funcName", editType)
+			resolve["ret"] = ret
+			return resolve
+		case "AddClassContent":
+			ret := op.addContent("className", editType)
+			resolve["ret"] = ret
+			return resolve
+		case "AddRouteGroupContent":
+			ret := op.addContent("routeName", editType)
 			resolve["ret"] = ret
 			return resolve
 		}
@@ -41,10 +49,19 @@ func (op *FileEdit) Execute(ctx context.Context) map[string]interface{} {
 
 }
 
-//在函数中添加代码
-func (op *FileEdit) addFuncContent() bool {
+func (op *FileEdit) getContent() string {
+	content := ""
+	if _, ok := op.resolveParams["content"]; ok {
+		content = op.resolveParams["content"].(string)
+	} else {
+		content = op.globalParams["content"]
+	}
+	return content
+}
+
+func (op *FileEdit) addContent(ckey, editType string) bool {
 	path := op.globalParams["path"]
-	funcName := op.currentParams["funcName"]
+	contains := op.currentParams[ckey]
 	offset, err := strconv.Atoi(op.currentParams["offset"])
 	utils.CheckError("error", err)
 	isBegin := false
@@ -58,23 +75,27 @@ func (op *FileEdit) addFuncContent() bool {
 		return false
 	}
 	tmpFile := strings.Split(string(dat), "\n")
-	var content string
-	if _, ok := op.resolveParams["content"]; ok {
-		content = op.resolveParams["content"].(string)
-	} else {
-		content = op.globalParams["content"]
-	}
+	content := op.getContent()
 	fh := &file.FlashFile{filepath.Ext(path)}
-	res := fh.AddFuncContent(tmpFile, funcName, content, isBegin, offset)
+	var res []string
+	switch editType {
+	case "AddFuncContent":
+		res = fh.AddFuncContent(tmpFile, contains, content, isBegin, offset)
+	case "AddClassContent":
+		res = fh.AddClassContent(tmpFile, contains, content, isBegin, offset)
+	case "AddRouteGroupContent":
+		res = fh.AddRouteGroupContent(tmpFile, contains, content, isBegin, offset)
+	}
+
 	if res != nil {
 		newContent := strings.Join(res, "\n")
 		go func() {
 			ioutil.WriteFile(path, []byte(newContent), 0)
 		}()
-		utils.CheckError("info", "添加内容到文件成功")
+		utils.CheckError("info", editType+"添加内容成功")
 		return true
 	} else {
-		utils.CheckError("error", "添加内容到文件失败")
+		utils.CheckError("error", editType+"添加内容失败")
 		return false
 	}
 }

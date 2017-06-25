@@ -2,7 +2,6 @@ package file
 
 import (
 	"flashCoder/utils"
-	"fmt"
 	"regexp"
 	"sort"
 	"strings"
@@ -37,13 +36,13 @@ func (f *FlashFile) DeleteLines(contents []string, lines []int) []string {
 	return res
 }
 
-func (f *FlashFile) AddLines(contents []string, line int, content string, isPre bool, newLine bool) []string {
+func (f *FlashFile) AddLines(contents []string, line int, space string, content string, isPre bool, newLine bool) []string {
 	if line <= 0 {
 		return nil
 	}
 	addContents := strings.Split(content, "\n")
 	for k, v := range addContents {
-		addContents[k] = "\t\t" + v
+		addContents[k] = space + v
 	}
 	var res []string
 	if newLine {
@@ -107,18 +106,25 @@ func (f *FlashFile) AddLines(contents []string, line int, content string, isPre 
 
 }
 
-func (f *FlashFile) FindFuncLine(contents []string, funcName string, funcRule string) (int, int) {
-	lineBegin, lineEnd := 0, 0
-	beginTag, endTag := "{", "}"
-	lfunc := strings.ToLower(funcName)
+func (f *FlashFile) FindLineBegin(contents []string, beginTag, rule, bcontains string) int {
+	lineBegin := 0
+	bcontains = strings.ToLower(bcontains)
 	for k, v := range contents {
 		lv := strings.ToLower(v)
-		match, err := regexp.Match(funcRule, []byte(lv))
+		match, err := regexp.Match(rule, []byte(v))
 		if err != nil {
-			fmt.Println(err)
-			continue
+			utils.CheckError("info", err)
 		}
-		if match && strings.Contains(lv, lfunc) {
+
+		if !match {
+			match, err = regexp.Match(rule, []byte(lv))
+			if err != nil {
+				utils.CheckError("info", err)
+				continue
+			}
+		}
+
+		if match && strings.Contains(lv, bcontains) {
 			if strings.Contains(lv, beginTag) {
 				lineBegin = k + 1
 			} else {
@@ -134,7 +140,11 @@ func (f *FlashFile) FindFuncLine(contents []string, funcName string, funcRule st
 			break
 		}
 	}
+	return lineBegin
+}
 
+func (f *FlashFile) FindLineEndAfterBegin(contents []string, lineBegin int, beginTag, endTag string) int {
+	lineEnd := 0
 	stat := 0
 	if lineBegin > 0 {
 		tmp := contents[lineBegin-1:]
@@ -153,17 +163,41 @@ func (f *FlashFile) FindFuncLine(contents []string, funcName string, funcRule st
 			}
 		}
 	}
+	return lineEnd
+}
+
+func (f *FlashFile) FindLineEndAtEnd(contents []string, endTag string) int {
+	lineEnd := 0
+	for i := len(contents) - 1; i >= 0; i-- {
+		lv := strings.ToLower(contents[i])
+		if strings.Contains(lv, endTag) {
+			lineEnd = i + 1
+			break
+		}
+	}
+	return lineEnd
+}
+
+func (f *FlashFile) FindLinesAfterBegin(contents []string, beginTag, endTag, bcontains, rule string) (int, int) {
+	lineBegin := f.FindLineBegin(contents, beginTag, rule, bcontains)
+	lineEnd := f.FindLineEndAfterBegin(contents, lineBegin, beginTag, endTag)
+	return lineBegin, lineEnd
+}
+
+func (f *FlashFile) FindLinesBeginEnd(contents []string, beginTag, endTag, bcontains, rule string) (int, int) {
+	lineBegin := f.FindLineBegin(contents, beginTag, rule, bcontains)
+	lineEnd := f.FindLineEndAtEnd(contents, endTag)
 	return lineBegin, lineEnd
 }
 
 func (f *FlashFile) AddFuncContent(contents []string, funcName string, content string, isBegin bool, offset int) []string {
 	funcRule := f.getFuncRule()
-	lineBegin, lineEnd := f.FindFuncLine(contents, funcName, funcRule)
+	lineBegin, lineEnd := f.FindLinesAfterBegin(contents, "{", "}", funcName, funcRule)
 	if lineBegin > 0 && lineEnd > 0 {
 		if isBegin {
-			return f.AddLines(contents, lineBegin+offset, content, false, true)
+			return f.AddLines(contents, lineBegin+offset, "\t\t", content, false, true)
 		} else {
-			return f.AddLines(contents, lineEnd-offset, content, true, true)
+			return f.AddLines(contents, lineEnd-offset, "\t\t", content, true, true)
 		}
 	}
 	return nil
@@ -174,6 +208,52 @@ func (f *FlashFile) getFuncRule() string {
 	switch fileType {
 	case ".php":
 		return "function\\s+[a-zA-Z_]+\\s*\\("
+	}
+	utils.CheckError("err", "no explicit file type")
+	return ""
+}
+
+func (f *FlashFile) AddClassContent(contents []string, className string, content string, isBegin bool, offset int) []string {
+	classRule := f.getClassRule()
+	lineBegin, lineEnd := f.FindLinesBeginEnd(contents, "{", "}", className, classRule)
+	if lineBegin > 0 && lineEnd > 0 {
+		if isBegin {
+			return f.AddLines(contents, lineBegin+offset, "\t", content, false, true)
+		} else {
+			return f.AddLines(contents, lineEnd-offset, "\t", content, true, true)
+		}
+	}
+	return nil
+}
+
+func (f *FlashFile) getClassRule() string {
+	fileType := strings.ToLower(f.FileType)
+	switch fileType {
+	case ".php":
+		return "class\\s+[a-zA-Z_]+\\s*"
+	}
+	utils.CheckError("err", "no explicit file type")
+	return ""
+}
+
+func (f *FlashFile) AddRouteGroupContent(contents []string, routeName string, content string, isBegin bool, offset int) []string {
+	routeGroupRule := f.getRouteGroupRule()
+	lineBegin, lineEnd := f.FindLinesAfterBegin(contents, "{", "}", routeName, routeGroupRule)
+	if lineBegin > 0 && lineEnd > 0 {
+		if isBegin {
+			return f.AddLines(contents, lineBegin+offset, "\t", content, false, true)
+		} else {
+			return f.AddLines(contents, lineEnd-offset, "\t", content, true, true)
+		}
+	}
+	return nil
+}
+
+func (f *FlashFile) getRouteGroupRule() string {
+	fileType := strings.ToLower(f.FileType)
+	switch fileType {
+	case ".php":
+		return "Route::group"
 	}
 	utils.CheckError("err", "no explicit file type")
 	return ""
