@@ -1,32 +1,93 @@
+var webpack = require('webpack');
 var path = require('path');
+var HtmlWebpackPlugin = require('html-webpack-plugin');
 
-  module.exports = {
-    entry: './src/index.js',
-    output: {
-      filename: 'bundle.js',
-      path: path.resolve(__dirname, 'dist/assets')
-    },
-    module: {
-      rules: [
-        {
-          test: /\.css$/,
+const PATHS = {
+    app: path.join(__dirname, 'src'),
+    dist: path.join(__dirname, 'dist'),
+    tpl: path.join(__dirname,  'tpl')
+};
+
+const merge = require('webpack-merge');
+const plugins = require('./webpack.plugins');
+
+const common = merge(
+    plugins.clean(PATHS.dist),
+    {
+      entry: {
+        index:path.join(PATHS.app, 'index.js'),
+        react:['react', 'react-dom', 'react-router', 'react-redux', 'react-bootstrap'],
+        redux:['redux',  'redux-saga'],
+        plugins:['jquery']
+      },
+      output:{
+        filename: '[name].[chunkhash:8].js',
+        path: PATHS.dist,
+        publicPath:'/'
+      },
+      plugins:[
+        new webpack.optimize.CommonsChunkPlugin({
+          name:['react', 'redux', 'plugins', 'manifest']
+        }),
+        new HtmlWebpackPlugin({
+          filename:'index.html',
+          template:path.join(PATHS.tpl, 'index.html')
+        })
+      ],
+      module: {
+        rules: [
+          {
+            test: /\.css$/,
+            use: [
+              'style-loader',
+              'css-loader'
+            ]
+          },
+          {
+            test: /\.(png|svg|jpg|gif)$/,
+            use: [
+              'file-loader'
+            ]
+          },
+         {
+           test: /\.(woff|woff2|eot|ttf|otf)$/,
           use: [
-            'style-loader',
-            'css-loader'
+             'file-loader'
           ]
-        },
-        {
-          test: /\.(png|svg|jpg|gif)$/,
-          use: [
-            'file-loader'
-          ]
-        },
-       {
-         test: /\.(woff|woff2|eot|ttf|otf)$/,
-        use: [
-           'file-loader'
+         },
+         {
+           test: /\.js$/,
+           exclude: /node_modules/, 
+           loader: 'babel-loader?presets[]=es2015&presets[]=react' 
+          }
         ]
-       }
-      ]
+      }
     }
-  };
+  );
+
+var config = null;
+
+// Detect the branch where npm is running on
+switch(process.env.npm_lifecycle_event) {
+    case 'prod':
+        config = merge(
+            common,
+            plugins.minify()
+        );
+        break;
+
+    case 'dev':
+    default:
+        config = merge(
+            common,
+            {
+              entry:{
+                redux:['redux-logger']
+              },
+              devtool: 'source-map'
+            }
+        );
+        break;
+}
+
+module.exports = config;
