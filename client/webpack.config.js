@@ -31,6 +31,7 @@ const common = merge(
         }),
         new HtmlWebpackPlugin({
           filename:'index.html',
+          favicon:path.join(PATHS.app, 'images', 'flash.ico'),
           template:path.join(PATHS.tpl, 'index.html')
         })
       ],

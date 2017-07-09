@@ -1,4 +1,7 @@
+var React = require('react');
+
 var TableWithHandle = React.createClass({
+
 	_renderRow: function(row, disrow){
 		let res =[];
 		disrow.map((dis,k)=>{
@@ -48,7 +51,8 @@ var TableWithHandle = React.createClass({
 		 </table>
 		);
 	},
-	
 
 });
+
+module.exports = TableWithHandle;
 

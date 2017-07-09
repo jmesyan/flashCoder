@@ -1,3 +1,5 @@
+var React = require('react');
+
 var TitleWithFunc = React.createClass({
 
 	render: function() {
@@ -9,7 +11,9 @@ var TitleWithFunc = React.createClass({
 				</div>
 			  </div>
 		);
-	},
+	}
 
 });
+
+module.exports = TitleWithFunc;
 

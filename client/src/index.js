@@ -4,10 +4,12 @@ import { createStore, applyMiddleware } from 'redux'
 import { createLogger } from 'redux-logger';
 import createSagaMiddleware from 'redux-saga';
 import { Provider } from 'react-redux'
-import { BrowserRouter, Route } from 'react-router-dom'
-import {cronList} from './pages';
+import { Router, Route, browserHistory, IndexRoute } from 'react-router'
+import {app, cronList} from './pages';
 import reducer  from './reducers';
 import './css/default.css'
+import './css/bootstrap.css'
+import './css/bootstrap-theme.css'
 
 const sagaMiddleware = createSagaMiddleware()
 const middleware = [ sagaMiddleware ]
@@ -23,9 +25,12 @@ const store = createStore(
 
 render(
     (<Provider store={store}>
-      	<BrowserRouter>
-        	<Route path="/" component={cronList} />
-    	</BrowserRouter>
+      	<Router history={browserHistory}>
+        	<Route path="/" component={app}>
+            <IndexRoute component={cronList}/>
+            <Route path="/cron/list" component={cronList}/>
+        	</Route>
+    	</Router>
     </Provider>),
     document.getElementById("container")
 );
