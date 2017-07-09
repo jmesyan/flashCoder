@@ -56,19 +56,23 @@ const common = merge(
           ]
          },
          {
-           test: /\.js$/,
+           test: /\.(js|jsx)$/,
            exclude: /node_modules/, 
-           loader: 'babel-loader?presets[]=es2015&presets[]=react' 
+           loader: 'babel-loader',
+           query: {
+             presets:['es2015','react', 'stage-2'],
+           }
           }
         ]
       }
-    }
+    },
+    plugins.copy()
   );
 
 var config = null;
 
 // Detect the branch where npm is running on
-switch(process.env.npm_lifecycle_event) {
+switch(process.env.NODE_ENV) {
     case 'prod':
         config = merge(
             common,

@@ -36,6 +36,33 @@ exports.clean = function (path) {
     };
 }
 
+exports.copy = function () {
+    const path = require('path');
+    const PATHS = {
+        app: path.join(__dirname, 'src'),
+        dist: path.join(__dirname, 'dist')
+    };
+    const CopyWebpackPlugin = require('copy-webpack-plugin');
+
+    return {
+        plugins: [
+            new CopyWebpackPlugin([
+                { from: path.join(PATHS.app,'css'), to: path.join(PATHS.dist,'css')},
+                { from: path.join(PATHS.app,'images'), to: path.join(PATHS.dist,'images')},
+            ], {
+                ignore: [
+
+                ],
+                // By default, we only copy modified files during
+                // a watch or webpack-dev-server build. Setting this
+                // to `true` copies all files.
+                copyUnmodified: true
+            })
+        ]
+    };
+}
+
+
 exports.less = function () {
     return {
         module: {
