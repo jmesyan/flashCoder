@@ -7,9 +7,9 @@ import { Provider } from 'react-redux'
 import { Router, Route, browserHistory, IndexRoute } from 'react-router'
 import {app, cronList} from './pages';
 import reducer  from './reducers';
-import './css/default.css'
-import './css/bootstrap.css'
-import './css/bootstrap-theme.css'
+import './assets/css/default.css'
+import './assets/css/bootstrap.css'
+import './assets/css/bootstrap-theme.css'
 
 const sagaMiddleware = createSagaMiddleware()
 const middleware = [ sagaMiddleware ]
