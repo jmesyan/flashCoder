@@ -71,8 +71,9 @@ const common = merge(
   );
 
 var config = null;
-
+process.env.NODE_ENV = 'dev'
 // Detect the branch where npm is running on
+console.log(process.env.NODE_ENV)
 switch(process.env.NODE_ENV) {
     case 'prod':
         config = merge(
@@ -94,5 +95,5 @@ switch(process.env.NODE_ENV) {
         );
         break;
 }
-
+console.log(config)
 module.exports = config;

@@ -6,6 +6,7 @@ import (
 	"flashCoder/supplier/crontab"
 	"flashCoder/supplier/ctr"
 	"flashCoder/supplier/html"
+	"fmt"
 	"net/http"
 	"strconv"
 	// "time"
@@ -26,6 +27,23 @@ func (c *CronController) Index(r *http.Request, w http.ResponseWriter) {
 		"page": pages.Show(),
 	}
 	c.View(w, data)
+}
+
+func (c *CronController) List(r *http.Request, w http.ResponseWriter) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")             //允许访问所有域
+	w.Header().Add("Access-Control-Allow-Headers", "Content-Type") //header的类型
+	w.Header().Set("content-type", "application/json")             //返回数据格式是json
+	page := 1
+	pageSize := 10
+	list := models.Cron.GetCronList(page, pageSize)
+	total := models.Cron.GetCronListCount()
+	pages := html.NewPage(page, pageSize, total, "/cron/list")
+	data := map[string]interface{}{
+		"list": list,
+		"page": pages.Show(),
+	}
+	res, _ := json.Marshal(data)
+	fmt.Fprint(w, string(res))
 }
 
 func (c *CronController) Add(r *http.Request, w http.ResponseWriter) {
