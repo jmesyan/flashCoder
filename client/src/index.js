@@ -6,9 +6,9 @@ import { createLogger } from 'redux-logger';
 import createSagaMiddleware from 'redux-saga';
 import { Provider } from 'react-redux'
 import { Router, Route, browserHistory, IndexRoute } from 'react-router'
-import {app, cronList} from './pages';
+import * as pages from './pages';
 import reducer  from './reducers';
-import {watchFetchList} from './actions/dataActions'
+import {watchFetchList, watchFetchItem} from './actions/dataActions'
 import './assets/css/default.css'
 import './assets/css/bootstrap.css'
 import './assets/css/bootstrap-theme.css'
@@ -25,13 +25,15 @@ const store = createStore(
   applyMiddleware(...middleware)
 )
 sagaMiddleware.run(watchFetchList)
+sagaMiddleware.run(watchFetchItem)
 
 render(
     (<Provider store={store}>
       	<Router history={browserHistory}>
-        	<Route path="/" component={app}>
-            <IndexRoute component={cronList}/>
-            <Route path="/cron/list" component={cronList}/>
+        	<Route path="/" component={pages.app}>
+            <IndexRoute component={pages.cronList}/>
+            <Route path="/cron/list" component={pages.cronList}/>
+            <Route path="/cron/update/:crid" component={pages.cronUpdate}/>
         	</Route>
     	</Router>
     </Provider>),

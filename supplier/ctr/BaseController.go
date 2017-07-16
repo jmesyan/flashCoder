@@ -1,6 +1,7 @@
 package ctr
 
 import (
+	"encoding/json"
 	"flashCoder/utils"
 	"fmt"
 	"html/template"
@@ -70,6 +71,14 @@ func (c *BaseController) View(w http.ResponseWriter, data interface{}) {
 		utils.CheckError("info", "template is empty")
 	}
 	return
+}
+
+func (c *BaseController) Jsonp(w http.ResponseWriter, data interface{}) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")             //允许访问所有域
+	w.Header().Add("Access-Control-Allow-Headers", "Content-Type") //header的类型
+	w.Header().Set("content-type", "application/json")             //返回数据格式是json
+	res, _ := json.Marshal(data)
+	fmt.Fprint(w, string(res))
 }
 
 func (c *BaseController) Success(w http.ResponseWriter, message, jumpUrl string) {

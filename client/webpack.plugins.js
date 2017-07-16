@@ -47,8 +47,8 @@ exports.copy = function () {
     return {
         plugins: [
             new CopyWebpackPlugin([
-                { from: path.join(PATHS.app,'css'), to: path.join(PATHS.dist,'css')},
-                { from: path.join(PATHS.app,'images'), to: path.join(PATHS.dist,'images')},
+                { from: path.join(PATHS.app,'assets','fonts'), to: path.join(PATHS.dist,'assets','fonts')},
+                { from: path.join(PATHS.app,'assets','images'), to: path.join(PATHS.dist,'assets','images')},
             ], {
                 ignore: [
 

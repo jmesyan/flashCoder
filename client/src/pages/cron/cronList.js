@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import {requestList} from '../actions/dataActions';
-import {TableWithHandle, TitleWithFunc} from '../components' 
+import {requestList} from '../../actions/dataActions';
+import {TableWithHandle, TitleWithFunc} from '../../components' 
 import {connect} from 'react-redux'
 
 class cronList extends Component{
@@ -26,7 +26,7 @@ class cronList extends Component{
   }
 
   handle(row, k){
-      var crid = row.Crid, url = "/cron/update?crid="+crid;
+      var crid = row.Crid, url = "/cron/update/"+crid;
       var updateDesc = row.State == 1? "开启":"关闭";
       var updateUrl = "/cron/updateState?crid="+crid;
       var deleteUrl = "/cron/delete?crid="+crid;
@@ -54,24 +54,17 @@ class cronList extends Component{
       {name:false, handle:this.handle},
     ];
 
-    var lists = this.props.lists, cronList = [];
-    if (lists != null && lists.fetched){
+    var lists = this.props.lists, cronList = {list:[], page:''};
+    if (lists != null && 'cronList' in lists){
       cronList = lists.cronList;
-      return (
+    } 
+     return (
         <div>
            <TitleWithFunc title="定时任务列表" handleName="添加定时任务" handleUrl="/cron/add" handleFunc={function(){return false}}/>
            <TableWithHandle titles={titles} list={cronList.list}  disrow={disrow}/>
            <div dangerouslySetInnerHTML={{__html: cronList.page}} />
         </div>
       );
-    } else {
-      return (
-        <div>
-           <TitleWithFunc title="定时任务列表" handleName="添加定时任务" handleUrl="/cron/add" handleFunc={function(){return false}}/>
-           暂无数据
-        </div>
-      );
-    }
 
 		
   }

@@ -1,29 +1,49 @@
 import { combineReducers } from 'redux'
-import {REQUEST_LIST, RECEIVE_LIST, REQUEST_ERROR} from '../actions/dataActions';
+import {RECEIVE_LIST, RECEIVE_ITEM, REQUEST_ERROR, CHANGE_ITEM} from '../actions/dataActions';
 
 const lists = function (state = null, action){
 	switch(action.type) {
-		case REQUEST_LIST:
-			return {
-				... state,
-				fetched:false,
-			}
 		case RECEIVE_LIST:
 			switch (action.kind){
 				case 'cronList':
 				return {
 					...state,
-					fetched:true,
 					cronList:action.list,
 				}
 			}
 			return state;
 		case REQUEST_ERROR:
-			 return {
-			 	...state,
-			 	fetchingError:true,
-			 	error:action.error
-			 }
+			console.log(action.error)
+			return state;
+		default:
+			return state;
+	}
+		
+}
+
+const items = function (state = null, action){
+	switch(action.type) {
+		case RECEIVE_ITEM:
+			switch (action.kind){
+				case 'cronItem':
+				return {
+					...state,
+					cronItem:action.item,
+				}
+			}
+			return state;
+		case CHANGE_ITEM:
+			switch (action.kind){
+				case 'cronItem':
+				return {
+					...state,
+					cronItem:action.item,
+				}
+			}
+			return state;
+		case REQUEST_ERROR:
+			console.log(action.error)
+			return state;
 		default:
 			return state;
 	}
@@ -31,8 +51,10 @@ const lists = function (state = null, action){
 }
 
 
+
 const rootReducer = combineReducers({
-  	lists
+  	lists,
+  	items
 })
 
 export default rootReducer

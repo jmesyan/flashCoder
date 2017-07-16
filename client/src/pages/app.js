@@ -4,7 +4,7 @@ var app = React.createClass({
 
 	render: function() {
 		return (
-			<div>
+			<div className="container bg-image  mt-20">
 				<div id="navigator" className="bg-navi">
 					<ol className="breadcrumb bgc-none">
 					  <li><a href="/cron/list" className="cron active">定时任务</a></li>

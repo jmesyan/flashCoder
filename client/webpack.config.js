@@ -33,6 +33,10 @@ const common = merge(
           filename:'index.html',
           favicon:path.join(PATHS.app,'assets', 'images', 'flash.ico'),
           template:path.join(PATHS.tpl, 'index.html')
+        }),
+        new webpack.ProvidePlugin({
+          $: 'jquery',
+          jQuery: 'jquery'
         })
       ],
       module: {
@@ -66,8 +70,8 @@ const common = merge(
           }
         ]
       }
-    }
-    // plugins.copy()
+    },
+    plugins.copy()
   );
 
 var config = null;
@@ -95,5 +99,4 @@ switch(process.env.NODE_ENV) {
         );
         break;
 }
-console.log(config)
 module.exports = config;
