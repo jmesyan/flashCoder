@@ -4,3 +4,4 @@ tester/test - 副本.php
 tester/tmptest.html
 flashCoder.exe~
 client/dist/
+.vscode/launch.json

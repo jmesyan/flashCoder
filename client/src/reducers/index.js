@@ -1,5 +1,8 @@
 import { combineReducers } from 'redux'
-import {RECEIVE_LIST, RECEIVE_ITEM, REQUEST_ERROR, CHANGE_ITEM} from '../actions/dataActions';
+import {RECEIVE_LIST, RECEIVE_ITEM, REQUEST_ERROR} from '../actions/dataActions';
+import reduceForm from './form.js'
+import { actions } from 'react-redux-form';
+  
 
 const lists = function (state = null, action){
 	switch(action.type) {
@@ -32,15 +35,6 @@ const items = function (state = null, action){
 				}
 			}
 			return state;
-		case CHANGE_ITEM:
-			switch (action.kind){
-				case 'cronItem':
-				return {
-					...state,
-					cronItem:action.item,
-				}
-			}
-			return state;
 		case REQUEST_ERROR:
 			console.log(action.error)
 			return state;
@@ -54,7 +48,8 @@ const items = function (state = null, action){
 
 const rootReducer = combineReducers({
   	lists,
-  	items
+	items,
+	...reduceForm
 })
 
 export default rootReducer

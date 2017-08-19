@@ -8,7 +8,7 @@ import (
 	"flashCoder/supplier/html"
 	"net/http"
 	"strconv"
-	// "time"
+	// "fmt"
 )
 
 type CronController struct {
@@ -77,23 +77,27 @@ func (c *CronController) Update(r *http.Request, w http.ResponseWriter) {
 	crint, _ := strconv.Atoi(r.Form["crid"][0])
 	crid = int64(crint)
 	if crid < 1 {
-		c.Error(w, "参数不正确", "")
-		return
+		data := map[string]interface{}{
+			"ret": 1,
+			"msg": "参数不正确",
+		}
+		c.Jsonp(w, data)
 	}
 
 	if r.Method == "POST" {
-		second := r.Form["second"][0]
-		minute := r.Form["minute"][0]
-		hour := r.Form["hour"][0]
-		day := r.Form["day"][0]
-		month := r.Form["month"][0]
-		week := r.Form["week"][0]
+		second := r.Form["Second"][0]
+		minute := r.Form["Minute"][0]
+		hour := r.Form["Hour"][0]
+		day := r.Form["Day"][0]
+		month := r.Form["Month"][0]
+		week := r.Form["Week"][0]
 		if len(second) > 0 && len(minute) > 0 && len(hour) > 0 && len(day) > 0 && len(month) > 0 && len(week) > 0 {
 			if models.Cron.UpdateCron(crid, second, minute, hour, day, month, week) {
 				crontab.Reload()
 				data := map[string]interface{}{
 					"ret": 0,
 					"msg": "更新数据成功",
+					 "data" : r.Form,
 				}
 				c.Jsonp(w, data)
 			} else {

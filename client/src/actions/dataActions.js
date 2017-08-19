@@ -1,11 +1,12 @@
 import fetch from 'isomorphic-fetch'
 import { take, call, put } from 'redux-saga/effects'
+import { takeLatest } from 'redux-saga'
 export const REQUEST_LIST = 'REQUEST_LIST';
 export const RECEIVE_LIST = 'RECEIVE_LIST';
 export const REQUEST_ITEM = 'REQUEST_ITEM';
 export const RECEIVE_ITEM = 'RECEIVE_ITEM';
-export const CHANGE_ITEM = 'CHANGE_ITEM';
 export const REQUEST_ERROR  = 'REQUEST_ERROR';
+export const POST_FORM  = 'POST_FORM';
 
 const Api = "http://localhost:6339/api";
 
@@ -42,12 +43,11 @@ export const receiveItem = function(kind, res){
 	}
 }
 
-export const changeItem = function(kind, res){
+export const postForm = function(kind, data){
 	return {
-		type:CHANGE_ITEM,
+		type:POST_FORM,
 		kind:kind,
-		item:res,
-		changeAt:Date.now()
+		data:data,
 	}
 }
 
@@ -64,7 +64,44 @@ function fetchApi(url){
             .then(json => json)
 }
 
+function postApi(url, data){
+	var formData = new URLSearchParams();  
+	for(let k in data){  
+		formData.append(k, data[k]);  
+	} 
+	var request = new Request(url,{
+		method: "POST",
+		headers: {
+			'Content-Type':'application/x-www-form-urlencoded',
+		},
+		body:formData
+	});
+	return fetch(request)
+	.then(response => response.json() )
+	.then(json => json)
+}
 
+function* handleForm(action) {
+	var kind = action.kind;
+	var data = action.data;
+	var fetchUrl = Api;
+	switch (kind) {
+		case 'cronFormUpdate':
+			fetchUrl += '/cron/update?crid='+data.Crid;
+			break;
+	}
+	try {
+		var res = yield call(postApi, fetchUrl, data);
+		alert(res.msg)
+	} catch (err){
+		yield put(requestError(err))
+	}	
+}
+
+
+export function* watchPostForm(){
+	yield* takeLatest(POST_FORM, handleForm)
+}
 
 export function* watchFetchList(){
 	var listRequest = yield take(REQUEST_LIST);
@@ -72,7 +109,8 @@ export function* watchFetchList(){
 	var fetchUrl = Api;
 	switch (kind) {
 		case 'cronList':
-		 	fetchUrl += '/cron/list';
+			 fetchUrl += '/cron/list';
+			 break;
 	}
 	try {
 		var res = yield call(fetchApi, fetchUrl);
@@ -94,7 +132,8 @@ export function* watchFetchItem(){
 	var fetchUrl = Api;
 	switch (kind) {
 		case 'cronItem':
-		 	fetchUrl += ('/cron/update'+ paramstr);
+			 fetchUrl += ('/cron/update'+ paramstr);
+			 break;
 	}
 	try {
 		var res = yield call(fetchApi, fetchUrl);

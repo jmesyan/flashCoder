@@ -1,5 +1,5 @@
-var React = require('react');
-
+import React from 'react';
+import DevTools from '../helpers/devTools';
 var app = React.createClass({
 
 	render: function() {
@@ -14,6 +14,9 @@ var app = React.createClass({
 					 </ol>
 				</div>
 			 	{this.props.children}
+				<div>
+					<DevTools/>
+				</div>
 			</div>
 		);
 	}
