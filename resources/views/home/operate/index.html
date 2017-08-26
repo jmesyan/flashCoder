@@ -13,13 +13,12 @@
 		location.href = url;
     }
     //表格
-	var titles = ["编号", "操作名称", "操作标识", "添加时间", "操作", "备注"];
+		var titles = ["编号", "操作名称", "操作标识", "添加时间", "操作", "备注"];
     var handle = function(row, k){
     	var opid = row.Opid;
-		return (
-				<td key={k}><a href="javascript:;"  onClick={deleteOperate.bind(this, opid)}>删除</a></td>
-			
-		);
+			return (
+					<td key={k}><a href="javascript:;"  onClick={deleteOperate.bind(this, opid)}>删除</a></td>
+			);
     }
     var disrow = [
 		{name:"Opid"},

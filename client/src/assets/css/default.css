@@ -20,3 +20,4 @@ body{background-color: #f5f5f5!important;background:-webkit-linear-gradient(top,
 body .h1{color:#fff !important;}
 table {background: #fff !important;}
 .form-error span{color: #a94442;}
+.inline-block {display: inline-block}

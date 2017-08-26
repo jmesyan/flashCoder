@@ -79,7 +79,6 @@ func (c *BaseController) Jsonp(w http.ResponseWriter, data interface{}) {
 	w.Header().Set("content-type", "application/json")             //返回数据格式是json
 	res, _ := json.Marshal(data)
 	fmt.Fprint(w, string(res))
-	return
 }
 
 func (c *BaseController) Success(w http.ResponseWriter, message, jumpUrl string) {

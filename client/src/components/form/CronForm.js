@@ -24,30 +24,9 @@ const minMaxValid = (val) => {
 var CronFrom = React.createClass({
 
 	render: function() {
-        const {handleSubmit, cronItem} = this.props;
 		return (
 			<div>
-                <Form 
-						model="cronForm" 
-							validators={{
-								'': {
-									dayOrWeek:(vals) => {
-										if (vals.Day != "" && vals.Week != "" && regexps.dayExist.test(vals.Day) && regexps.weekExist.test(vals.Week)) return false;
-										return true;
-									}
-								},
-							}}
-							onSubmit = {handleSubmit}
-						>
-							<div className="form-inline clear" >
-								<div className="form-group fl">
-									<label className="form-control">任务ID:{cronItem.task.Tid}</label>
-								</div>
-								<div className="form-group fl ml-20">
-									<label className="form-control">任务名称:{cronItem.task.Tname}</label>
-								</div>
-							</div>
-							<div className="form-inline clear mt-20">
+						<div className="form-inline clear mt-20">
 								<div className="form-group">
 									<Field model="cronForm.Second" validators={{ isRequired, minMaxValid, regValid:(val)=>val == '' || regexps.second.test(val)}}>
 											<input type="text" className="form-control fc-p64" placeholder="请输入秒"/>
@@ -171,10 +150,6 @@ var CronFrom = React.createClass({
 										</Field>
 								</div>
 							</div>
-							<div className="form-group mt-20">
-								<input type="submit" className="btn btn-primary" value="提交任务" />
-							</div>	
-					</Form>
             </div>
 		);
 	}

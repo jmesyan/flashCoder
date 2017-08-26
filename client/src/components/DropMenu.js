@@ -1,30 +1,36 @@
+var React = require('react');
+import {requestItem} from '../actions/dataActions';
+import {connect} from 'react-redux'
 var DropMenu = React.createClass({
 	getInitialState: function() {
 		return {
 			options:[],
-			value:""
+			value:"",
+			initial:false
 		};
 	},
 
 	componentDidMount: function() {
-		var url = this.props.url || "";
-		if (url.length > 0){
-			 fetch(url).then((response) => {
-	            return response.json();
-	        }).then((responseJson) => {
-	                this.setState({options:responseJson});
-	                if(this.props.value != 'undefined'){
-						this.setState({value:this.props.value})
-					}
-	        }).catch((error) => console.error(error));
+		const {fetchType, fetchParams, dispatch} = this.props;
+		if (fetchType.length > 0) {
+			dispatch(requestItem(fetchType, fetchParams))
 		}
+		if(this.props.value != 'undefined'){
+			this.setState({value:this.props.value})
+		}
+	},
 
-
+	componentWillUpdate:function(nextProps, nextState){
+		if (nextProps.items && !this.state.initial){
+			this.setState({options:eval(nextProps.items.jsonOperateList), initial:true})
+			this.state.options = eval(nextProps.items.jsonOperateList)
+			this.state.options && this.props.changeFunc(this.state.options[0].value+"")
+		}
 	},
 
 	render: function() {
 		return (
-			 <select name="operate" className="form-control dropdown-toggle" value={this.state.value} onChange={this.props.changeFunc.bind(this, this)} >
+			 <select name="operate" className="form-control dropdown-toggle"  onChange={(event)=>this.props.changeFunc( event.target.value)} >
 		       {
 		       	this.state.options.map(function(option,k){
 		       		return (<option key={k} value={option.value}>{option.name}</option>);
@@ -35,3 +41,10 @@ var DropMenu = React.createClass({
 	}
 
 });
+
+
+const mapStateToProps = state => {
+    return state;
+  }
+  
+export default connect(mapStateToProps)(DropMenu)

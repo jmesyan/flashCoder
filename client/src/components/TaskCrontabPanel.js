@@ -1,9 +1,7 @@
+var React = require('react');
+import ModelDialog from './ModelDialog'
+import "bootstrap/js/modal";
 var TaskCrontabPanel = React.createClass({
-	getDefaultProps: function() {
-		return {
-			itemList:[]
-		};
-	},
 	getInitialState: function() {
 		let confirmParams = {
 	     	  id:this.props.dialogName,  
@@ -25,17 +23,20 @@ var TaskCrontabPanel = React.createClass({
 			chooseList:[],
 			insertIndex:0,
 			deleteIndex:null,
+			initial:false
 		};
 	},
-	componentWillMount: function() {
-		if (this.props.itemList.length > 0) {
+	componentWillUpdate:function(nextProps, nextState){
+		if (!this.state.initial && nextProps.itemList.length > 0){
 			var itemChecks = [];
-			var idName = this.props.itemIdName;
-			for (var i in this.props.itemList){
-				var id = this.props.itemList[i][idName];
+			var idName = nextProps.itemIdName;
+			var itemList = nextProps.itemList;
+			for (var i in itemList){
+				var id = itemList[i][idName];
 				itemChecks[id]={isChecked:false};
 			}
-			this.setState({itemChecks:itemChecks});
+			this.setState({itemChecks:itemChecks,initial:true});
+			this.state.itemChecks = itemChecks;
 		}
 	},
 	render: function() {
@@ -97,7 +98,8 @@ var TaskCrontabPanel = React.createClass({
 		var deleteIndex = this.state.deleteIndex;
 		if (deleteIndex != null) {
 			this.state.chooseList.splice(deleteIndex,1);
-		}	
+		}
+		this.props.taskChooseList && this.props.taskChooseList(this.props.saveName, this.state.chooseList)
 		this.setState({chooseList:this.state.chooseList, deleteIndex:null});
 		$("#"+this.props.dialogName).modal("hide");
 	},
@@ -137,7 +139,8 @@ var TaskCrontabPanel = React.createClass({
 	itemChoose:function(itemName,itemId){
 	    var length = this.state.chooseList.length;
 	    this.state.chooseList.splice(0,length);
-	    this.state.chooseList.push({itemId:itemId,itemName:itemName})
+		this.state.chooseList.push({itemId:itemId,itemName:itemName})
+		this.props.taskChooseList && this.props.taskChooseList(this.props.saveName, this.state.chooseList)
 		this.setState({chooseList:this.state.chooseList});
 		this.itemCancel(itemId);
 	},
@@ -156,3 +159,4 @@ TaskCrontabPanel.propTypes = {
   dialogName: React.PropTypes.string.isRequired,  
 };  
 
+module.exports = TaskCrontabPanel;

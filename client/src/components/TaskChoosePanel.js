@@ -1,3 +1,7 @@
+var React = require('react');
+import ModelDialog from './ModelDialog'
+import OrderSelect from './OrderSelect'
+import "bootstrap/js/modal";
 var TaskChoosePanel = React.createClass({
 	getDefaultProps: function() {
 		return {
@@ -27,15 +31,17 @@ var TaskChoosePanel = React.createClass({
 			deleteIndex:null,
 		};
 	},
-	componentWillMount: function() {
-		if (this.props.itemList.length > 0) {
+	componentWillUpdate:function(nextProps, nextState){
+		if (!this.state.initial && nextProps.itemList.length > 0){
 			var itemChecks = [];
-			var idName = this.props.itemIdName;
-			for (var i in this.props.itemList){
-				var id = this.props.itemList[i][idName];
+			var idName = nextProps.itemIdName;
+			var itemList = nextProps.itemList;
+			for (var i in itemList){
+				var id = itemList[i][idName];
 				itemChecks[id]={isChecked:false};
 			}
-			this.setState({itemChecks:itemChecks});
+			this.setState({itemChecks:itemChecks,initial:true});
+			this.state.itemChecks = itemChecks;
 		}
 	},
 	render: function() {
@@ -100,6 +106,7 @@ var TaskChoosePanel = React.createClass({
 		if (deleteIndex != null) {
 			this.state.chooseList.splice(deleteIndex,1);
 		}	
+		this.props.taskChooseList && this.props.taskChooseList(this.props.saveName, this.state.chooseList)
 		this.setState({chooseList:this.state.chooseList, deleteIndex:null});
 		$("#"+this.props.dialogName).modal("hide");
 	},
@@ -138,6 +145,7 @@ var TaskChoosePanel = React.createClass({
 
 	_itemChoose:function(itemName,itemId){
 		this._insert(this.state.chooseList, this.state.insertIndex, {itemId:itemId,itemName:itemName});
+		this.props.taskChooseList && this.props.taskChooseList(this.props.saveName, this.state.chooseList)
 		this.setState({chooseList:this.state.chooseList});
 		this._itemCancel(itemId);
 	},
@@ -156,3 +164,4 @@ TaskChoosePanel.propTypes = {
   dialogName: React.PropTypes.string.isRequired,  
 };  
 
+module.exports = TaskChoosePanel;

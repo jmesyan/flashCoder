@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import {requestList} from '../../actions/dataActions';
 import {TableWithHandle, TitleWithFunc} from '../../components' 
 import {connect} from 'react-redux'
-
+import {requestExec} from '../../actions/dataActions';
 class cronList extends Component{
 	static propTypes = {
     lastUpdated: PropTypes.number,
@@ -25,16 +25,26 @@ class cronList extends Component{
       );
   }
 
+  cronUpdate(crid) {
+    const {dispatch} = this.props;
+    let data = {Crid:crid};
+    dispatch(requestExec('cronUpdateState', data))
+  }
+
+  cronDelete(crid) {
+    const {dispatch} = this.props;
+    let data = {Crid:crid};
+    dispatch(requestExec('cronDelete', data))
+  }
+
   handle(row, k){
       var crid = row.Crid, url = "/cron/update/"+crid;
       var updateDesc = row.State == 1? "开启":"关闭";
-      var updateUrl = "/cron/updateState?crid="+crid;
-      var deleteUrl = "/cron/delete?crid="+crid;
       return (
         <td key={k}>
         <a href={url} >修改</a>
-        <a href={updateUrl} className="ml-20">{updateDesc}</a>
-        <a href={deleteUrl} className="ml-20">删除</a>
+        <a href="javascript:void(0)" onClick={this.cronUpdate.bind(this, crid)} className="ml-20">{updateDesc}</a>
+        <a href="javascript:void(0)" onClick={this.cronDelete.bind(this, crid)} className="ml-20">删除</a>
         </td>
       );
   }
@@ -51,7 +61,7 @@ class cronList extends Component{
       {name:"Tid"},
       {name:false, handle:this.crontab},
       {name:false, handle:this.stateDs},
-      {name:false, handle:this.handle},
+      {name:false, handle:this.handle.bind(this)},
     ];
 
     var lists = this.props.lists, cronList = {list:[], page:''};

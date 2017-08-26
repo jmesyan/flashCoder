@@ -14,17 +14,17 @@ type TaskController struct {
 	ctr.BaseController
 }
 
-func (c *TaskController) Index(r *http.Request, w http.ResponseWriter) {
+func (c *TaskController) List(r *http.Request, w http.ResponseWriter) {
 	page := c.ParsePage(r)
 	pageSize := 10
 	list := models.Task.GetTaskList(0, page, pageSize)
 	total := models.Task.GetTaskListCount(0)
-	pages := html.NewPage(page, pageSize, total, "/task/index")
+	pages := html.NewPage(page, pageSize, total, "/task/list")
 	data := map[string]interface{}{
 		"list": list,
 		"page": pages.Show(),
 	}
-	c.View(w, data)
+	c.Jsonp(w, data)
 }
 
 func (c *TaskController) Add(r *http.Request, w http.ResponseWriter) {
@@ -41,21 +41,41 @@ func (c *TaskController) Add(r *http.Request, w http.ResponseWriter) {
 			json.Unmarshal([]byte(taskList), &itemList)
 		}
 		if len(itemList) <= 0 || len(taskName) <= 0 {
-			c.Error(w, "请选择数据", "")
+			data := map[string]interface{}{
+				"ret": 1,
+				"msg": "请选择数据",
+			}
+			c.Jsonp(w, data)
 		} else {
 			if taskType == "basicTask" {
 				res := models.Task.AddBasicTask(taskName, itemList)
 				if res {
-					c.Success(w, "添加任务成功", "/task/index")
+					data := map[string]interface{}{
+						"ret": 0,
+						"msg": "添加任务成功",
+					}
+					c.Jsonp(w, data)
 				} else {
-					c.Error(w, "添加任务失败,请重试", "")
+					data := map[string]interface{}{
+						"ret": 1,
+						"msg": "添加任务失败,请重试",
+					}
+					c.Jsonp(w, data)
 				}
 			} else {
 				res := models.Task.AddCompositeTask(taskName, itemList)
 				if res {
-					c.Success(w, "添加任务成功", "/task/index")
+					data := map[string]interface{}{
+						"ret": 0,
+						"msg": "添加任务成功",
+					}
+					c.Jsonp(w, data)
 				} else {
-					c.Error(w, "添加任务失败,请重试", "")
+					data := map[string]interface{}{
+						"ret": 1,
+						"msg": "添加任务失败,请重试",
+					}
+					c.Jsonp(w, data)
 				}
 			}
 		}
@@ -72,7 +92,7 @@ func (c *TaskController) Add(r *http.Request, w http.ResponseWriter) {
 			"basicTaskList": basicTaskList,
 		}
 
-		c.View(w, data)
+		c.Jsonp(w, data)
 	}
 
 }
@@ -83,20 +103,36 @@ func (c *TaskController) TaskExecute(r *http.Request, w http.ResponseWriter) {
 		var tid int64
 		tidstr := r.Form["tid"][0]
 		if len(tidstr) <= 0 {
-			c.Error(w, "任务信息不全", "")
+			data := map[string]interface{}{
+				"ret": 1,
+				"msg": "任务信息不全",
+			}
+			c.Jsonp(w, data)
 		} else {
 			td, err := strconv.Atoi(tidstr)
 			if err != nil {
-				c.Error(w, "任务id应该是整数", "")
+				data := map[string]interface{}{
+					"ret": 1,
+					"msg": "任务id应该是整数",
+				}
+				c.Jsonp(w, data)
 				return
 			}
 			tid = int64(td)
 			taskDetail := models.Task.GetTask(tid)
 			if taskDetail.Tid > 0 {
 				jobs.TaskExecute(taskDetail)
-				c.Success(w, "任务执行完成", "")
+				data := map[string]interface{}{
+					"ret": 0,
+					"msg": "任务执行完成",
+				}
+				c.Jsonp(w, data)
 			} else {
-				c.Error(w, "任务不存在", "")
+				data := map[string]interface{}{
+					"ret": 1,
+					"msg": "任务不存在",
+				}
+				c.Jsonp(w, data)
 			}
 		}
 	}
@@ -108,12 +144,19 @@ func (c *TaskController) EditTaskBehaviors(r *http.Request, w http.ResponseWrite
 		var tid int64
 		tidstr := r.Form["tid"][0]
 		if len(tidstr) <= 0 {
-			c.Error(w, "任务信息不全", "")
+			data := map[string]interface{}{
+				"ret": 1,
+				"msg": "任务信息不全",
+			}
+			c.Jsonp(w, data)
 		} else {
 			td, err := strconv.Atoi(tidstr)
 			if err != nil {
-				c.Error(w, "任务id应该是整数", "")
-				return
+				data := map[string]interface{}{
+					"ret": 1,
+					"msg": "任务id应该是整数",
+				}
+				c.Jsonp(w, data)
 			}
 			tid = int64(td)
 			task := models.Task.GetTask(tid)
@@ -122,13 +165,21 @@ func (c *TaskController) EditTaskBehaviors(r *http.Request, w http.ResponseWrite
 				data := map[string]interface{}{
 					"list": taskBehavior,
 				}
-				c.View(w, data)
+				c.Jsonp(w, data)
 			} else {
-				c.Error(w, "任务不存在", "")
+				data := map[string]interface{}{
+					"ret": 1,
+					"msg": "任务不存在",
+				}
+				c.Jsonp(w, data)
 			}
 		}
 	} else {
-		c.Error(w, "操作失败", "")
+		data := map[string]interface{}{
+			"ret": 1,
+			"msg": "操作失败",
+		}
+		c.Jsonp(w, data)
 	}
 
 }
@@ -139,11 +190,19 @@ func (c *TaskController) TaskBehaviorParams(r *http.Request, w http.ResponseWrit
 		var tbid int64
 		tbidstr := r.Form["tbid"][0]
 		if len(tbidstr) <= 0 {
-			c.Error(w, "任务信息不全", "")
+			data := map[string]interface{}{
+				"ret": 1,
+				"msg": "任务信息不全",
+			}
+			c.Jsonp(w, data)
 		} else {
 			td, err := strconv.Atoi(tbidstr)
 			if err != nil {
-				c.Error(w, "任务id应该是整数", "")
+				data := map[string]interface{}{
+					"ret": 1,
+					"msg": "任务id应该是整数",
+				}
+				c.Jsonp(w, data)
 				return
 			}
 			tbid = int64(td)
@@ -156,18 +215,31 @@ func (c *TaskController) TaskBehaviorParams(r *http.Request, w http.ResponseWrit
 			} else {
 				tid = int(behavior.Tid)
 			}
-			c.Success(w, "行为更新成功", "/task/editTaskBehaviors?tid="+strconv.Itoa(tid))
+			data := map[string]interface{}{
+				"ret": 0,
+				"msg": "行为更新成功",
+				"tid":tid,
+			}
+			c.Jsonp(w, data)
 		}
 	} else {
 		r.ParseForm()
 		var tbid int64
 		tbidstr := r.Form["tbid"][0]
 		if len(tbidstr) <= 0 {
-			c.Error(w, "任务信息不全", "")
+			data := map[string]interface{}{
+				"ret": 1,
+				"msg": "任务信息不全",
+			}
+			c.Jsonp(w, data)
 		} else {
 			td, err := strconv.Atoi(tbidstr)
 			if err != nil {
-				c.Error(w, "任务id应该是整数", "")
+				data := map[string]interface{}{
+					"ret": 1,
+					"msg": "任务id应该是整数",
+				}
+				c.Jsonp(w, data)
 				return
 			}
 			tbid = int64(td)
@@ -175,13 +247,18 @@ func (c *TaskController) TaskBehaviorParams(r *http.Request, w http.ResponseWrit
 			if behavior.Bid > 0 {
 				baseBehavior := models.Behavior.GetBehavior(behavior.Bid)
 				data := map[string]interface{}{
+					"ret": 0,
 					"base":   baseBehavior,
 					"params": behavior.Paramsin,
 					"tbid":   tbid,
 				}
-				c.View(w, data)
+				c.Jsonp(w, data)
 			} else {
-				c.Error(w, "行为不存在", "")
+				data := map[string]interface{}{
+					"ret": 1,
+					"msg": "行为不存在",
+				}
+				c.Jsonp(w, data)
 			}
 		}
 	}
@@ -193,18 +270,33 @@ func (c *TaskController) Delete(r *http.Request, w http.ResponseWriter) {
 	tint, _ := strconv.Atoi(r.Form["tid"][0])
 	tid = int64(tint)
 	if tid < 1 {
-		c.Error(w, "参数不正确", "")
-		return
+		data := map[string]interface{}{
+			"ret": 1,
+			"msg": "参数不正确",
+		}
+		c.Jsonp(w, data)
 	}
 	//检查行为是否已被任务使用
 	count := models.Cron.GetTaskCountInCron(tid)
 	if count > 0 {
-		c.Error(w, "该任务存在于计划当中", "")
+		data := map[string]interface{}{
+			"ret": 1,
+			"msg": "该任务存在于计划当中",
+		}
+		c.Jsonp(w, data)
 	} else {
 		if models.Task.DeleteTask(tid) {
-			c.Success(w, "删除成功", "")
+			data := map[string]interface{}{
+				"ret": 0,
+				"msg": "删除成功",
+			}
+			c.Jsonp(w, data)
 		} else {
-			c.Error(w, "删除失败", "")
+			data := map[string]interface{}{
+				"ret": 1,
+				"msg": "删除失败",
+			}
+			c.Jsonp(w, data)
 		}
 	}
 

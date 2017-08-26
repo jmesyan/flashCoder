@@ -31,12 +31,12 @@ func (c *CronController) List(r *http.Request, w http.ResponseWriter) {
 func (c *CronController) Add(r *http.Request, w http.ResponseWriter) {
 	if r.Method == "POST" {
 		r.ParseForm()
-		second := r.Form["second"][0]
-		minute := r.Form["minute"][0]
-		hour := r.Form["hour"][0]
-		day := r.Form["day"][0]
-		month := r.Form["month"][0]
-		week := r.Form["week"][0]
+		second := r.Form["Second"][0]
+		minute := r.Form["Minute"][0]
+		hour := r.Form["Hour"][0]
+		day := r.Form["Day"][0]
+		month := r.Form["Month"][0]
+		week := r.Form["Week"][0]
 		taskType := r.Form["taskType"][0]
 		var itemList []models.TaskItem
 		if taskType == "basicTask" {
@@ -50,9 +50,17 @@ func (c *CronController) Add(r *http.Request, w http.ResponseWriter) {
 			taskId := itemList[0].ItemId
 			models.Cron.AddCron(taskId, second, minute, hour, day, month, week)
 			crontab.Reload()
-			c.Success(w, "定时添加成功", "/cron/index")
+			data := map[string]interface{}{
+				"ret": 0,
+				"msg": "定时任務添加成功",
+			}
+			c.Jsonp(w, data)
 		} else {
-			c.Error(w, "请选择数据", "")
+			data := map[string]interface{}{
+				"ret": 1,
+				"msg": "请选择数据",
+			}
+			c.Jsonp(w, data)
 		}
 	} else {
 		page := c.ParsePage(r)
@@ -67,7 +75,7 @@ func (c *CronController) Add(r *http.Request, w http.ResponseWriter) {
 			"compositeTaskList": compositeTaskList,
 		}
 
-		c.View(w, data)
+		c.Jsonp(w, data)
 	}
 }
 
@@ -97,7 +105,6 @@ func (c *CronController) Update(r *http.Request, w http.ResponseWriter) {
 				data := map[string]interface{}{
 					"ret": 0,
 					"msg": "更新数据成功",
-					 "data" : r.Form,
 				}
 				c.Jsonp(w, data)
 			} else {
@@ -134,7 +141,11 @@ func (c *CronController) UpdateState(r *http.Request, w http.ResponseWriter) {
 	crint, _ := strconv.Atoi(r.Form["crid"][0])
 	crid = int64(crint)
 	if crid < 1 {
-		c.Error(w, "参数不正确", "")
+		data := map[string]interface{}{
+			"ret": 1,
+			"msg": "參數不正確",
+		}
+		c.Jsonp(w, data)
 		return
 	}
 	cron := models.Cron.GetCron(crid)
@@ -151,9 +162,17 @@ func (c *CronController) UpdateState(r *http.Request, w http.ResponseWriter) {
 	if models.Cron.UpdateCronState(crid, state) {
 		crontab.Reload()
 		message := stateDesc + "成功！"
-		c.Success(w, message, "")
+		data := map[string]interface{}{
+			"ret": 0,
+			"msg": message,
+		}
+		c.Jsonp(w, data)
 	} else {
-		c.Error(w, "操作失败", "")
+		data := map[string]interface{}{
+			"ret": 1,
+			"msg": "操作失败",
+		}
+		c.Jsonp(w, data)
 	}
 }
 
@@ -163,14 +182,26 @@ func (c *CronController) Delete(r *http.Request, w http.ResponseWriter) {
 	crint, _ := strconv.Atoi(r.Form["crid"][0])
 	crid = int64(crint)
 	if crid < 1 {
-		c.Error(w, "参数不正确", "")
+		data := map[string]interface{}{
+			"ret": 1,
+			"msg": "參數不正確",
+		}
+		c.Jsonp(w, data)
 		return
 	}
 	if models.Cron.DeleteCron(crid) {
 		crontab.Reload()
-		c.Success(w, "删除成功", "")
+		data := map[string]interface{}{
+			"ret": 0,
+			"msg": "刪除成功",
+		}
+		c.Jsonp(w, data)
 	} else {
-		c.Error(w, "删除失败", "")
+		data := map[string]interface{}{
+			"ret": 1,
+			"msg": "删除失败",
+		}
+		c.Jsonp(w, data)
 	}
 
 }

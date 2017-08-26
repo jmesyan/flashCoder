@@ -74,7 +74,7 @@ func (c *BehaviorController) Update(r *http.Request, w http.ResponseWriter) {
 				return
 			}
 			models.Behavior.UpdateBehavior(bid, bname, []byte(r.Form["paramsList"][0]), remark)
-			c.Success(w, "行为更新成功", "/behavior/index")
+			// c.Success(w, "行为更新成功", "/behavior/index")
 		} else {
 			c.Error(w, "数据不能为空", "")
 		}

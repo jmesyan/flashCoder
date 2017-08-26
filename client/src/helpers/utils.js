@@ -13,3 +13,5 @@ function timeFormat(timestamp) {
 	var second=now.getSeconds(); 
 	return "20"+year+"-"+month+"-"+date+" "+hour+":"+minute+":"+second; 
 } 
+
+exports.timeFormat = timeFormat

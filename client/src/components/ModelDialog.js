@@ -1,3 +1,4 @@
+var React = require('react');
 var ModelDialog = React.createClass({
   render() {  
     const props = this.props;  
@@ -26,3 +27,5 @@ var ModelDialog = React.createClass({
 ModelDialog.propTypes = {  
   title: React.PropTypes.string.isRequired,  
 };  
+
+module.exports = ModelDialog

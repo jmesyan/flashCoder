@@ -1,4 +1,4 @@
-
+var React = require('react');
 var OrderSelect = React.createClass({
 	getDefaultProps: function() {
 		return {
@@ -31,3 +31,5 @@ var OrderSelect = React.createClass({
 	}
 
 });
+
+module.exports = OrderSelect

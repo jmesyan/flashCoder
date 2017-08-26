@@ -32,18 +32,20 @@ var TableWithHandle = React.createClass({
 	},
 
 	render: function() {
+		var titles = this.props.titles? this.props.titles: [];
+		var list = this.props.list? eval(this.props.list): [];
 		return (
 		<table className="table table-striped">
 			<tbody>
 	 		<tr>
 	 			{
-	 				this.props.titles.map(function(title,k){
+	 				titles.map(function(title,k){
 	 					return <th key={k}>{title}</th>
 	 				})
 	 			}
 			</tr>
 			{
-				this.props.list.map((row, k)=>{
+				list.map((row, k)=>{
 					return <tr key={k}>{this._renderRow(row,this.props.disrow)}</tr>;
 				})
 			}

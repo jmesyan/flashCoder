@@ -1,7 +1,6 @@
-
+var React = require('react');
 var ParamsEditor = React.createClass({
 	getDefaultProps: function() {
-		console.log("getDefaultProps")
 		return {
 			paramTypes:[{val:1,name:"文本"}, {val:2,name:"密码"}, {val:3,name:"编辑器"}],
 			paramsList:[],
@@ -11,7 +10,6 @@ var ParamsEditor = React.createClass({
 		};
 	},
 	getInitialState: function() {
-		console.log(this.props.type, "getInitialState")
 		return {
 			paramsList:this.props.paramsList,
 			editKey:this.props.editKey,
@@ -20,16 +18,14 @@ var ParamsEditor = React.createClass({
 		};
 	},
 	componentWillReceiveProps: function(nextProps) {
-		console.log(this.props.type,"componentWillReceiveProps")
 		this.setState ({
 			paramsList:nextProps.paramsList,
 			editKey:nextProps.editKey,
 		});
 	},
 	componentWillUpdate: function(nextProps, nextState) {
-			console.log(this.props.type,"componentWillUpdate")
 		var editKey = nextState.editKey;
-		if (this.props.type == "update" && editKey != null){
+		if (this.props.type == "update" && editKey != null && nextState.paramsList.length > 0){
 				this.refs.paramType.value = nextState.paramsList[editKey].type;
 				this.refs.paramName.value = nextState.paramsList[editKey].name;
 				this.refs.paramValue.value = nextState.paramsList[editKey].value;
@@ -39,7 +35,6 @@ var ParamsEditor = React.createClass({
 		var editKey = this.state.editKey;
 		if(this.props.onlyEditContent && editKey != null){
 			for (var k in this.props.paramTypes){
-				console.log(this.props.paramTypes[k].val , parseInt(this.state.curType))
 				if (this.props.paramTypes[k].val == parseInt(this.state.curType)){
 					this.setState({onlyTypeName:this.props.paramTypes[k].name});
 					break;
@@ -48,7 +43,6 @@ var ParamsEditor = React.createClass({
 		}
 	},
 	render: function() {
-		console.log(this.props.type,"render")
 		return (
 			<div>
 			 <div className="form-group mt-20">
@@ -96,7 +90,7 @@ var ParamsEditor = React.createClass({
 	_renderParamName:function(){
 		if (this.props.onlyEditContent){
 			var editKey = this.state.editKey;
-			var txtName = editKey != null ? this.props.paramsList[editKey].name : "";
+			var txtName = editKey != null && this.state.paramsList.length >0 ? this.state.paramsList[editKey].name : "";
 			return (
 				<div>
 		 		 <input type="hidden" className="form-control" ref="paramName"   placeholder="参数名称" />
@@ -140,3 +134,4 @@ var ParamsEditor = React.createClass({
 	},
 });
 
+module.exports = ParamsEditor

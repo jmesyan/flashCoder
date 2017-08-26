@@ -4,7 +4,6 @@ import (
 	"flashCoder/app/models"
 	"flashCoder/supplier/ctr"
 	"flashCoder/supplier/html"
-	"fmt"
 	"net/http"
 	"strconv"
 )
@@ -13,7 +12,7 @@ type OperateController struct {
 	ctr.BaseController
 }
 
-func (c *OperateController) Index(r *http.Request, w http.ResponseWriter) {
+func (c *OperateController) List(r *http.Request, w http.ResponseWriter) {
 	page := c.ParsePage(r)
 	pageSize := 10
 	list := models.Operate.GetOperateList(page, pageSize)
@@ -23,15 +22,18 @@ func (c *OperateController) Index(r *http.Request, w http.ResponseWriter) {
 		"list": list,
 		"page": pages.Show(),
 	}
-	c.View(w, data)
+	c.Jsonp(w, data)
 }
 
 func (c *OperateController) Add(r *http.Request, w http.ResponseWriter) {
 	if r.Method == "POST" {
 		r.ParseForm()
 		if r.Form["opname"][0] == "" || r.Form["optag"][0] == "" {
-			c.Error(w, "操作名称或者标识不能为空", "")
-			return
+			data := map[string]interface{}{
+				"ret": 1,
+				"msg": "操作名称或者标识不能为空",
+			}
+			c.Jsonp(w, data)
 		} else {
 			remark := "-"
 			if len(r.Form["remark"]) > 0 {
@@ -41,16 +43,21 @@ func (c *OperateController) Add(r *http.Request, w http.ResponseWriter) {
 			optag := r.Form["optag"][0]
 			//检查操作名称是否存在
 			if models.Operate.IsExistOperate(0, optag) {
-				c.Error(w, "操作标识已存在，请调整", "")
+				data := map[string]interface{}{
+					"ret": 1,
+					"msg": "操作标识已存在，请调整",
+				}
+				c.Jsonp(w, data)
 				return
 			}
 			//加入数据
 			models.Operate.AddOperate(opname, optag, remark)
-			c.Success(w, "保存数据成功", "/operate/index")
-			return
+			data := map[string]interface{}{
+				"ret": 0,
+				"msg": "保存数据成功",
+			}
+			c.Jsonp(w, data)
 		}
-	} else {
-		c.View(w, nil)
 	}
 }
 
@@ -61,18 +68,33 @@ func (c *OperateController) Delete(r *http.Request, w http.ResponseWriter) {
 	opid = int64(oint)
 	count := models.Operate.GetOperateCount(opid)
 	if opid < 1 || count < 1 {
-		c.Error(w, "不存在该操作", "")
-		return
+		data := map[string]interface{}{
+			"ret": 1,
+			"msg": "不存在该操作",
+		}
+		c.Jsonp(w, data)
 	} else {
 		//检查操作是否已被行为使用
 		count := models.Behavior.GetOperateCountInBehavior(opid)
 		if count > 0 {
-			c.Error(w, "该操作已被行为使用", "")
+			data := map[string]interface{}{
+				"ret": 1,
+				"msg": "该操作已被行为使用",
+			}
+			c.Jsonp(w, data)
 		} else {
 			if models.Operate.DeleteOperate(opid) {
-				c.Success(w, "删除成功", "")
+				data := map[string]interface{}{
+					"ret": 0,
+					"msg": "删除成功",
+				}
+				c.Jsonp(w, data)
 			} else {
-				c.Error(w, "删除失败", "")
+				data := map[string]interface{}{
+					"ret": 1,
+					"msg": "删除失败",
+				}
+				c.Jsonp(w, data)
 			}
 		}
 	}
@@ -80,6 +102,6 @@ func (c *OperateController) Delete(r *http.Request, w http.ResponseWriter) {
 
 func (c *OperateController) JsonOperateList(r *http.Request, w http.ResponseWriter) {
 	operates := models.Operate.GetOperateSelectItems()
-	fmt.Fprint(w, string(operates))
+	c.Jsonp(w, operates)
 
 }

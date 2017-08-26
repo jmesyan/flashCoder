@@ -1,0 +1,9 @@
+*{ padding: 0; margin: 0; }
+.system-message{ padding: 24px 48px; }
+.system-message h1{ font-size: 100px; font-weight: normal; line-height: 120px; margin-bottom: 12px;color: #fff}
+.system-message .jump{ padding-top: 10px;color: #fff;}
+.system-message .jump a{ color: #fff;}
+.system-message .success,.system-message .error{ line-height: 1.8em; font-size: 36px }
+.system-message .detail{ font-size: 12px; line-height: 20px; margin-top: 12px; display:none}
+.system-message .success {color: #5cb85c;}
+.system-message .error {color: #d9534f;}
