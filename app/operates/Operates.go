@@ -21,6 +21,7 @@ var Operates = map[string]OperatesIn{
 	"MsgTip":    new(MsgTip),
 	"ParseTmpl": new(ParseTmpl),
 	"FileEdit":  new(FileEdit),
+	"Spider":new(Spider),
 }
 
 func init() {
