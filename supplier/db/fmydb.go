@@ -20,7 +20,6 @@ func (m *FMyDB) Init(connstr string) error {
 	}
 	m.connstr = connstr
 	return nil
-	return nil
 }
 
 func (m *FMyDB) Close() {

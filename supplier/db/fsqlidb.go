@@ -20,7 +20,6 @@ func (m *FSqliDB) Init(connstr string) error {
 	}
 	m.connstr = connstr
 	return nil
-	return nil
 }
 
 func (m *FSqliDB) Close() {
